@@ -737,6 +737,6 @@
   });
   $('next-recipe').addEventListener('click', () => { currentIdea++; renderIdea(); });
   $('build-plan').addEventListener('click', buildPlan);
-  $('recipe-total').textContent = recipes.length;
+  if ($('recipe-total')) $('recipe-total').textContent = recipes.length;
   render();
 })();
