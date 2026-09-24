@@ -4,7 +4,7 @@ A few leftovers in the kitchen, but no clear idea what to do with them. Use Firs
 
 **[Try the tool](https://obstudio.org/tools/use-first/)**
 
-Paste your food as a comma-separated list or put one item on each line. If a name is misspelled or incomplete, the tool offers the closest known ingredients as you type. You can check the food types before adding everything. It then shows meals you can make from the foods on your list. If the list can make two separate meals, a second button splits the food between them so the same item is never counted twice.
+Paste your food as a comma-separated list or put one item on each line. The tool recognizes common food names and quietly fixes small spelling mistakes when you review the list. You add a cooked date for leftovers that need one, then it shows meals you can make from your food. If the list can make two separate meals, a second button splits the food between them so the same item is never counted twice.
 
 For example, entering `leftover rice, half a tomato, ripe banana, plain yogurt` can give you fried rice for one meal and a fruit-and-yogurt bowl for the next. The list starts empty; that example is only here to show how it works.
 
@@ -16,7 +16,7 @@ There are plenty of recipe search sites. This one focuses on leftovers already i
 
 ## How it works
 
-The app is plain HTML, CSS and JavaScript. It recognizes over 90 common ingredient names, groups them into 36 food types, and suggests close names with a small edit-distance matcher. Its flexible meal patterns include fried rice, noodle stir-fry, a tortilla melt, bean salad, hummus wraps, potato hash, soup, oatmeal, and fruit with yogurt. It only presents a meal as complete when it matches the foods you entered. When it cannot make a complete match, it suggests one type of food that could help.
+The app is plain HTML, CSS and JavaScript. It recognizes over 90 common ingredient names, groups them into 36 food types, and fixes minor typos with a small edit-distance matcher. Unknown names are not accepted or used in recipes; the user can try a more specific name. Its flexible meal patterns include fried rice, noodle stir-fry, a tortilla melt, bean salad, hummus wraps, potato hash, soup, oatmeal, and fruit with yogurt. It only presents a meal as complete when it matches the foods you entered. When it cannot make a complete match, it suggests one type of food that could help.
 
 Cooked leftovers need a cooked date. Food more than four days old is kept out of meal suggestions; see the [USDA guidance](https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/leftovers-and-food-safety) for storage and reheating. The app cannot check how food was stored or whether it is spoiled.
 

@@ -12,7 +12,7 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--paper); color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
-button, input, select { font: inherit; }
+button, input, textarea { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 button { cursor: pointer; }
 a { color: inherit; }
@@ -57,14 +57,9 @@ main { max-width: 1280px; padding: 0 40px; margin: auto; }
 .kitchen-card h3, .idea-top h3 { margin: 0; font-size: 23px; letter-spacing: -.04em; }
 form { margin-top: 27px; }
 label { display: block; margin: 18px 0 7px; font-size: 13px; font-weight: 700; }
-input[type=text], input[type=date], select, textarea { width: 100%; min-height: 49px; border: 1px solid #859082; border-radius: 0; background: white; color: var(--ink); padding: 12px 13px; font-size: 16px; }
+input[type=date], textarea { width: 100%; min-height: 49px; border: 1px solid #859082; border-radius: 0; background: white; color: var(--ink); padding: 12px 13px; font-size: 16px; }
 textarea { min-height: 118px; resize: vertical; line-height: 1.5; }
-.ingredient-suggestions { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 9px; }
-.ingredient-suggestions span { width: 100%; color: var(--muted); font-size: 12px; }
-.ingredient-suggestions button { padding: 7px 10px; border: 1px solid var(--line); background: var(--white); color: var(--green); font-size: 12px; font-weight: 700; }
-.ingredient-suggestions button:hover { border-color: var(--green); background: var(--pale); }
 input::placeholder { color: #8a9188; }
-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%23233027' stroke-width='2'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; }
 .field-help { margin: 8px 0 0; color: var(--muted); font-size: 12px; line-height: 1.35; }
 .primary-button { width: 100%; margin-top: 24px; padding: 15px 18px; display: flex; align-items: center; justify-content: space-between; border: 0; background: var(--green); color: white; font-size: 14px; font-weight: 700; text-align: left; }
 .form-error { margin: 12px 0 0; color: #9f3329; font-size: 13px; }
@@ -74,7 +69,8 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
 .review-row { padding: 13px 0; border-top: 1px solid var(--line); }
 .review-row:first-child { border-top: 0; }
 .review-row > strong { display: block; overflow-wrap: anywhere; margin-bottom: 8px; font-size: 14px; }
-.review-row select { font-size: 14px; }
+.review-row > small { display: block; margin-top: -3px; color: var(--muted); font-size: 12px; }
+.review-row > em { display: block; margin-top: 6px; color: var(--green); font-size: 12px; font-style: normal; }
 .review-date { display: flex; gap: 12px; align-items: center; margin-top: 8px; }
 .review-date label { flex: 0 0 103px; margin: 0; font-size: 12px; }
 .review-date input { flex: 1; min-width: 0; font-size: 14px; }

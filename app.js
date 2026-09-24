@@ -281,7 +281,8 @@
   }
   function savePlan() { try { localStorage.setItem(PLAN_KEY, JSON.stringify(twoDayPlan)); } catch {} }
   function resetPlan() { twoDayPlan = null; savePlan(); }
-  function eligible(item, dayOffset = 0) { return !COOKED.has(item.type) || (dayDiff(item.date) >= 0 && dayDiff(item.date) + dayOffset <= 4); }
+  function recognizedItem(item) { return parseFood(item.name)?.type === item.type; }
+  function eligible(item, dayOffset = 0) { return recognizedItem(item) && (!COOKED.has(item.type) || (dayDiff(item.date) >= 0 && dayDiff(item.date) + dayOffset <= 4)); }
   function ideasFor(items, dayOffset = 0) {
     const available = items.filter(item => eligible(item, dayOffset)).sort((a, b) => a.date.localeCompare(b.date));
     return recipes.map(recipe => {
@@ -303,7 +304,7 @@
 
   function simpleName(name) {
     return name.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, ' ')
-      .replace(/\b(?:a|an|the|of|half|some|few|last|bit|ripe|plain|leftover|leftovers|cooked|fresh|small|large|can|tin|tinned|canned)\b/g, ' ')
+      .replace(/\b(?:\d+|a|an|the|of|half|quarter|one|two|three|four|some|few|last|night|s|bit|ripe|plain|left|over|leftover|leftovers|cooked|fresh|small|large|can|tin|tinned|canned|yesterday|reheated|fried|grilled|roasted|baked|boiled|steamed)\b/g, ' ')
       .replace(/\s+/g, ' ').trim();
   }
   function editDistance(a, b) {
@@ -315,29 +316,22 @@
     }
     return previous[b.length];
   }
-  function nearestIngredients(name) {
+  function matchIngredient(name) {
     const query = simpleName(name);
-    if (query.length < 3) return [];
-    const proteinAllowed = /\b(cooked|leftover|yesterday|reheated)\b/i.test(name);
+    if (query.length < 3) return null;
+    const proteinAllowed = /\b(cooked|leftover|yesterday|reheated|fried|grilled|roasted|baked|boiled|steamed)\b/i.test(name);
     const fishAllowed = /\b(can|canned|tin|tinned|sardines?)\b/i.test(name);
     return INGREDIENTS.map(([label, type]) => {
       if (type === 'cooked-protein' && !proteinAllowed) return null;
       if (type === 'canned-fish' && !fishAllowed) return null;
       const candidate = simpleName(label);
       const distance = editDistance(query, candidate);
-      const score = query === candidate ? 100
-        : candidate.startsWith(query) ? 85 + 10 * query.length / candidate.length
-        : query.startsWith(candidate) && candidate.length >= 4 ? 80 + 10 * candidate.length / query.length
-        : candidate.includes(query) ? 70
-        : query[0] === candidate[0] && distance <= Math.max(1, Math.floor(query.length * .28)) ? 65 - distance * 10 : 0;
-      return { label, type, score };
-    }).filter(candidate => candidate && candidate.score >= 45)
-      .sort((a, b) => b.score - a.score || a.label.length - b.label.length)
-      .slice(0, 3);
+      return query[0] === candidate[0] && distance <= (query.length >= 8 ? 2 : 1) ? { label, type, distance } : null;
+    }).filter(Boolean).sort((a, b) => a.distance - b.distance || a.label.length - b.label.length)[0] || null;
   }
-  function guessType(name, useFuzzy = true) {
+  function guessType(name) {
     const value = name.toLowerCase();
-    const cooked = /\b(leftover|cooked|yesterday|last night|reheated)\b/.test(value);
+    const cooked = /\b(leftover|cooked|yesterday|last night|reheated|fried|grilled|roasted|baked|boiled|steamed)\b/.test(value);
     if (/\b(canned|tinned|tin of|can of)\s+(tuna|salmon|sardines?|fish)\b|\bsardines?\b/.test(value)) return 'canned-fish';
     if (/\b(rice|risotto)\b/.test(value)) return 'cooked-rice';
     if (/\b(pasta|spaghetti|macaroni|penne)\b/.test(value)) return 'cooked-pasta';
@@ -369,28 +363,16 @@
     if (/\b(milk)\b/.test(value)) return 'milk';
     if (/\b(oats?|oatmeal)\b/.test(value)) return 'oats';
     if (/\b(banana|apple|pear|orange|mango|berries|berry|strawberry|strawberries|blueberry|blueberries|grapes?|peaches?|pineapple|melon|fruit)\b/.test(value)) return 'fruit';
-    return useFuzzy ? nearestIngredients(name).find(candidate => candidate.score >= 55)?.type || '' : '';
+    return '';
   }
-  function renderSuggestions() {
-    const input = $('food-input');
-    const last = input.value.split(/[,;\n]/).at(-1).trim();
-    const matches = last && !guessType(last, false) ? nearestIngredients(last) : [];
-    const holder = $('ingredient-suggestions'); holder.replaceChildren();
-    holder.hidden = matches.length === 0;
-    if (!matches.length) return;
-    const label = document.createElement('span'); label.textContent = 'Closest ingredients'; holder.append(label);
-    for (const match of matches) {
-      const button = document.createElement('button'); button.type = 'button'; button.textContent = match.label;
-      button.addEventListener('click', () => {
-        const value = input.value;
-        const start = Math.max(value.lastIndexOf(','), value.lastIndexOf(';'), value.lastIndexOf('\n')) + 1;
-        const current = value.slice(start);
-        const prefix = current.match(/^\s*(?:leftover\s+|cooked\s+)?/i)?.[0] || '';
-        input.value = value.slice(0, start) + prefix + match.label;
-        input.focus(); renderSuggestions();
-      });
-      holder.append(button);
-    }
+  function parseFood(name) {
+    const match = matchIngredient(name);
+    if (!match) return null;
+    const corrected = match.distance > 0 && !guessType(name);
+    const prefix = name.match(/^\s*(?:leftover|cooked|canned|tinned|fried|grilled|roasted|baked|boiled|steamed)\s+/i)?.[0] || '';
+    const displayName = corrected ? `${prefix}${match.label}`.trim() : name;
+    const type = guessType(displayName) || match.type;
+    return { name: displayName, originalName: name, type, date: '' };
   }
   function renderReview() {
     $('review').hidden = draft.length === 0;
@@ -398,20 +380,17 @@
     for (const [index, item] of draft.entries()) {
       const row = document.createElement('div'); row.className = 'review-row';
       const name = document.createElement('strong'); name.textContent = item.name;
-      const select = document.createElement('select'); select.id = `review-type-${index}`; select.setAttribute('aria-label', `Food type for ${item.name}`);
-      const placeholder = document.createElement('option'); placeholder.value = ''; placeholder.textContent = 'Choose a food type'; select.append(placeholder);
-      for (const [label, types] of [['Cooked leftovers', [...COOKED]], ['Fresh and pantry food', Object.keys(LABEL).filter(type => !COOKED.has(type))]]) {
-        const group = document.createElement('optgroup'); group.label = label;
-        for (const type of types) { const option = document.createElement('option'); option.value = type; option.textContent = LABEL[type]; group.append(option); }
-        select.append(group);
+      const type = document.createElement('small'); type.textContent = LABEL[item.type];
+      row.append(name, type);
+      if (item.originalName !== item.name) {
+        const correction = document.createElement('em'); correction.textContent = `Spelling fixed from “${item.originalName}”`;
+        row.append(correction);
       }
-      select.value = item.type;
       const dateRow = document.createElement('div'); dateRow.className = 'review-date'; dateRow.hidden = !COOKED.has(item.type);
       const dateLabel = document.createElement('label'); dateLabel.htmlFor = `review-date-${index}`; dateLabel.textContent = 'Cooked on';
       const date = document.createElement('input'); date.id = `review-date-${index}`; date.type = 'date'; date.max = todayISO(); date.value = item.date;
       date.addEventListener('change', () => { item.date = date.value; });
-      select.addEventListener('change', () => { item.type = select.value; item.date = ''; date.value = ''; dateRow.hidden = !COOKED.has(item.type); });
-      dateRow.append(dateLabel, date); row.append(name, select, dateRow); holder.append(row);
+      dateRow.append(dateLabel, date); row.append(dateRow); holder.append(row);
     }
   }
   function renderPantry() {
@@ -429,15 +408,19 @@
       const number = document.createElement('span'); number.className = 'food-number'; number.textContent = String(index + 1).padStart(2, '0');
       const main = document.createElement('div'); main.className = 'food-main';
       const strong = document.createElement('strong'); strong.textContent = item.name;
-      const small = document.createElement('small'); small.textContent = `${LABEL[item.type]}${COOKED.has(item.type) ? ` · cooked ${item.date}` : ''}${eligible(item) ? '' : ' · not used in ideas'}`;
+      const small = document.createElement('small'); small.textContent = `${LABEL[item.type]}${COOKED.has(item.type) ? ` · cooked ${item.date}` : ''}${recognizedItem(item) ? eligible(item) ? '' : ' · past four days; not used in ideas' : ' · unrecognized; not used in ideas'}`;
       main.append(strong, small);
       const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = '×'; remove.setAttribute('aria-label', `Remove ${item.name}`);
       remove.addEventListener('click', () => { pantry = pantry.filter(food => food.id !== item.id); savePantry(); resetPlan(); currentIdea = 0; render(); });
       row.append(number, main, remove); holder.append(row);
     }
-    const excluded = pantry.filter(item => !eligible(item)).length;
-    $('overdue-note').hidden = !excluded;
-    $('overdue-note').textContent = excluded ? `${excluded} cooked item${excluded === 1 ? ' is' : 's are'} past four days, so ${excluded === 1 ? 'it is' : 'they are'} left out of meal ideas.` : '';
+    const unrecognized = pantry.filter(item => !recognizedItem(item)).length;
+    const overdue = pantry.filter(item => recognizedItem(item) && COOKED.has(item.type) && !eligible(item)).length;
+    const notes = [];
+    if (unrecognized) notes.push(`${unrecognized} older item${unrecognized === 1 ? ' is' : 's are'} unrecognized and left out of meal ideas. Remove and re-add with a food name.`);
+    if (overdue) notes.push(`${overdue} cooked item${overdue === 1 ? ' is' : 's are'} past four days and left out of meal ideas.`);
+    $('overdue-note').hidden = !notes.length;
+    $('overdue-note').textContent = notes.join(' ');
   }
   function fillList(id, values) {
     const holder = $(id); holder.replaceChildren();
@@ -469,6 +452,7 @@
   }
   function renderTwoMealPlan() {
     if (twoDayPlan && twoDayPlan.date !== todayISO()) twoDayPlan = null;
+    if (twoDayPlan && twoDayPlan.days.some(day => !day || !Array.isArray(day.usedIds) || day.usedIds.some(id => !pantry.some(item => item.id === id && eligible(item))))) resetPlan();
     $('two-day-result').hidden = !twoDayPlan;
     if (!twoDayPlan) return;
     const days = twoDayPlan.date === todayISO() ? twoDayPlan.days : [];
@@ -509,7 +493,7 @@
   }
   function render() { renderPantry(); renderIdea(); renderTwoMealPlan(); }
 
-  $('food-input').addEventListener('input', () => { draft = []; $('review').hidden = true; $('form-error').hidden = true; renderSuggestions(); });
+  $('food-input').addEventListener('input', () => { draft = []; $('review').hidden = true; $('form-error').hidden = true; });
   $('add-form').addEventListener('submit', event => {
     event.preventDefault();
     const names = $('food-input').value.split(/[,;\n]+/).map(value => value.trim().replace(/\s+/g, ' ')).filter(Boolean);
@@ -518,22 +502,26 @@
     else if (names.some(name => name.length > 45)) error = 'Keep each food name under 45 characters.';
     else if (names.length > 20) error = 'Add up to 20 foods at a time.';
     else if (pantry.length + names.length > 60) error = 'Your kitchen list has room for 60 foods. Remove a few first.';
+    const parsed = error ? [] : names.map(parseFood);
+    const unknown = parsed.findIndex(item => !item);
+    if (!error && unknown >= 0) error = /\b(raw|uncooked)\s+(chicken|beef|pork|turkey|fish|salmon|meat)\b/i.test(names[unknown])
+      ? 'This tool uses cooked meat or fish, and canned fish. Add it after cooking.'
+      : `I don't recognize “${names[unknown]}” yet. Try a specific food name or check the spelling.`;
     $('form-error').hidden = !error; $('form-error').textContent = error;
     if (error) return;
-    draft = names.map(name => ({ name, type: guessType(name), date: '' }));
+    draft = parsed;
     $('review-error').hidden = true;
     renderReview();
     $('review').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
   $('add-reviewed').addEventListener('click', () => {
-    const missingType = draft.find(item => !Object.hasOwn(LABEL, item.type));
     const missingDate = draft.find(item => COOKED.has(item.type) && !item.date);
     const futureDate = draft.find(item => COOKED.has(item.type) && item.date && dayDiff(item.date) < 0);
-    const error = missingType ? `Choose a food type for ${missingType.name}.` : missingDate ? `Add the cooked date for ${missingDate.name}.` : futureDate ? `The cooked date for ${futureDate.name} cannot be in the future.` : '';
+    const error = missingDate ? `Add the cooked date for ${missingDate.name}.` : futureDate ? `The cooked date for ${futureDate.name} cannot be in the future.` : '';
     $('review-error').hidden = !error; $('review-error').textContent = error;
     if (error) return;
     for (const item of draft) pantry.push({ id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`, name: item.name, type: item.type, date: COOKED.has(item.type) ? item.date : todayISO() });
-    savePantry(); resetPlan(); currentIdea = 0; draft = []; $('add-form').reset(); renderSuggestions(); renderReview(); render();
+    savePantry(); resetPlan(); currentIdea = 0; draft = []; $('add-form').reset(); renderReview(); render();
   });
   $('clear-list').addEventListener('click', () => {
     if (!confirm('Clear this kitchen list from your browser?')) return;
