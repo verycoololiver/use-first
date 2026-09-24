@@ -16,6 +16,14 @@ Use the [live tool on OB Studio](https://obstudio.org/tools/use-first/). You can
 
 The kitchen list is saved in this browser's local storage. It starts empty. No sample item or test purchase is inserted. Clearing the list is a user action. The two-day plan is a proposal, not evidence that a meal was cooked or food was saved.
 
+## Screenshots
+
+The first shows the live tool's empty state. The other two are labeled demos made with entered example food: leftover rice, half a tomato, a banana and plain yogurt. They do not represent verified food saved.
+
+![Use First landing page](screenshots/01-landing.png)
+![Demo meal idea using entered leftovers](screenshots/02-meal-idea-demo.png)
+![Demo two-day plan assigning each item once](screenshots/03-two-day-plan-demo.png)
+
 ## How matching works
 
 The app has a small set of flexible meal patterns: fried rice, a pasta skillet, soup, an egg skillet, a rice bowl, loaded toast, a bean pan, fruit and yogurt, and a few one-ingredient fallbacks. It matches food types, names the exact items used, and separately lists any missing category. Water and a little cooking oil are assumed; seasoning is optional. Complete matches rank ahead of those needing another ingredient. The two-day planner searches pairs of complete meal matches, excludes any leftover that would pass the four-day cooked-food window by tomorrow, and scores plans by how much listed food they assign, with a small priority for older cooked food. Each item can appear in at most one planned meal.
