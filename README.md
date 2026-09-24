@@ -22,7 +22,7 @@ Cooked leftovers need a cooked date. Food more than four days old is kept out of
 
 Everything runs in the browser. Your kitchen list is saved in local storage on that device. There is no account or external recipe API. TheMealDB's [free API](https://www.themealdb.com/api.php) only filters by one ingredient; multi-ingredient filtering requires a supporter key. The local meal patterns keep the tool usable without a key or network call. OpenAI Codex assisted development.
 
-To run it yourself, open `index.html` in a browser or serve this folder as static files. The public version is hosted at the link above.
+To run it yourself, put `index.html`, `styles.css`, and `app.js` in a `tools/use-first` folder under a static web server, then open `/tools/use-first/`. The asset paths start at that folder so the live page also works when someone leaves off the final slash. The public version is hosted at the link above.
 
 ## Hackathon notes
 
