@@ -4,7 +4,7 @@ A few leftovers in the kitchen, but no clear idea what to do with them. Use Firs
 
 **[Try the tool](https://obstudio.org/tools/use-first/)**
 
-Paste your food as a comma-separated list or put one item on each line. The tool recognizes common food names and quietly fixes small spelling mistakes when you review the list. You add a cooked date for leftovers that need one, then it shows meals you can make from your food. If the list can make two separate meals, a second button splits the food between them so the same item is never counted twice.
+Paste your food as a comma-separated list or put one item on each line. The tool recognizes common food names and quietly fixes small spelling mistakes when you review the list. You add a date for cooked leftovers or raw meat and fish, then it shows meals you can make from your food. If the list can make two separate meals, a second button splits the food between them so the same item is never counted twice.
 
 For example, entering `leftover rice, half a tomato, ripe banana, plain yogurt` can give you fried rice for one meal and a fruit-and-yogurt bowl for the next. The list starts empty; that example is only here to show how it works.
 
@@ -16,9 +16,9 @@ There are plenty of recipe search sites. This one focuses on leftovers already i
 
 ## How it works
 
-The app is plain HTML, CSS and JavaScript. It recognizes over 90 common ingredient names, groups them into 36 food types, and fixes minor typos with a small edit-distance matcher. Unknown names are not accepted or used in recipes; the user can try a more specific name. Its flexible meal patterns include fried rice, noodle stir-fry, a tortilla melt, bean salad, hummus wraps, potato hash, soup, oatmeal, and fruit with yogurt. It only presents a meal as complete when it matches the foods you entered. When it cannot make a complete match, it suggests one type of food that could help.
+The app is plain HTML, CSS and JavaScript. It recognizes 117 common ingredient names, groups them into 40 food types, and fixes minor typos with a small edit-distance matcher. Unknown names are not accepted or used in recipes; the user can try a more specific name. Its 31 meal patterns include fried rice, chicken and vegetable skillet, meat and tomato pasta, fish with potatoes, a bean and cheese wrap, soup, oatmeal, and fruit with yogurt. It only presents a meal as complete when it matches the foods you entered. When it cannot make a complete match, it suggests one type of food that could help.
 
-Cooked leftovers need a cooked date. Food more than four days old is kept out of meal suggestions; see the [USDA guidance](https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/leftovers-and-food-safety) for storage and reheating. The app cannot check how food was stored or whether it is spoiled.
+Cooked leftovers need a cooked date. Raw meat and fish need the date they went into the fridge. The app leaves cooked food out of suggestions after four days, raw poultry, fish and ground meat after two days, and whole cuts of meat after five days. The cooking steps use the [FoodSafety.gov temperature chart](https://www.foodsafety.gov/food-safety-charts/safe-minimum-internal-temperatures). The app cannot check how food was stored or whether it is spoiled.
 
 Everything runs in the browser. Your kitchen list is saved in local storage on that device. There is no account or external recipe API. TheMealDB's [free API](https://www.themealdb.com/api.php) only filters by one ingredient; multi-ingredient filtering requires a supporter key. The local meal patterns keep the tool usable without a key or network call. OpenAI Codex assisted development.
 

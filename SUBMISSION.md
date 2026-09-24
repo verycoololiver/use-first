@@ -17,7 +17,7 @@ Use First addresses **UN Sustainable Development Goal 12, target 12.3**, which c
 
 ## What I built
 
-The app runs entirely in the browser. It recognizes over 90 common ingredient names across 36 food types, with a small matching algorithm for typos. Unrecognized names are not turned into cooking instructions. Its meal patterns include fried rice, soup, potato hash, a tortilla melt, hummus wraps, bean salad, and fruit with yogurt. Cooked leftovers need a cooked date; items past four days are left out of suggestions. The kitchen list stays on the device in browser local storage.
+The app runs entirely in the browser. It recognizes 117 common ingredient names across 40 food types, with a small matching algorithm for typos. Unrecognized names are not turned into cooking instructions. Its 31 meal patterns include fried rice, chicken and vegetable skillet, meat and tomato pasta, fish with potatoes, soup, a bean and cheese wrap, and fruit with yogurt. Cooked leftovers and raw meat need a date; older items are left out based on their food type. The kitchen list stays on the device in browser local storage.
 
 The optional two-meal plan appears only when the current list can make two complete meals. It assigns each item at most once. The meal ideas are suggestions, not a claim that food has already been saved.
 

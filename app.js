@@ -4,6 +4,8 @@
   const KEY = 'usefirst_kitchen_v1';
   const PLAN_KEY = 'usefirst_two_day_plan_v1';
   const COOKED = new Set(['cooked-rice', 'cooked-pasta', 'cooked-noodles', 'cooked-grain', 'cooked-potato', 'cooked-veg', 'cooked-protein', 'cooked-beans']);
+  const RAW = new Set(['raw-poultry', 'raw-meat', 'raw-ground-meat', 'raw-fish']);
+  const DATED = new Set([...COOKED, ...RAW]);
   const LABEL = {
     'cooked-rice': 'cooked rice', 'cooked-pasta': 'cooked pasta', 'cooked-noodles': 'cooked noodles',
     'cooked-grain': 'cooked grains', 'cooked-potato': 'cooked potatoes', 'cooked-veg': 'cooked vegetables',
@@ -14,7 +16,9 @@
     oats: 'oats', 'canned-beans': 'canned beans or lentils', 'canned-tomato': 'canned tomatoes',
     carrot: 'carrots', pepper: 'peppers', broccoli: 'broccoli', cucumber: 'cucumber',
     cabbage: 'cabbage', corn: 'corn', avocado: 'avocado', hummus: 'hummus',
-    'peanut-butter': 'peanut butter', nuts: 'nuts or seeds', 'canned-fish': 'canned fish'
+    'peanut-butter': 'peanut butter', nuts: 'nuts or seeds', 'canned-fish': 'canned fish',
+    'raw-poultry': 'raw chicken or turkey', 'raw-meat': 'raw beef, pork or lamb',
+    'raw-ground-meat': 'raw ground meat', 'raw-fish': 'raw fish or shrimp'
   };
   const FRESH_VEG = ['fresh-veg', 'greens', 'tomato', 'onion', 'mushrooms', 'carrot', 'pepper', 'broccoli', 'cabbage', 'corn'];
   const VEG = ['cooked-veg', ...FRESH_VEG];
@@ -43,7 +47,11 @@
     ['hummus', 'hummus'], ['peanut butter', 'peanut-butter'], ['almond butter', 'peanut-butter'],
     ['almonds', 'nuts'], ['walnuts', 'nuts'], ['peanuts', 'nuts'], ['sunflower seeds', 'nuts'], ['pumpkin seeds', 'nuts'],
     ['canned tuna', 'canned-fish'], ['tinned tuna', 'canned-fish'], ['canned salmon', 'canned-fish'], ['sardines', 'canned-fish'],
-    ['cooked chicken', 'cooked-protein'], ['cooked tofu', 'cooked-protein'], ['cooked fish', 'cooked-protein'], ['cooked beef', 'cooked-protein']
+    ['cooked chicken', 'cooked-protein'], ['cooked tofu', 'cooked-protein'], ['cooked fish', 'cooked-protein'], ['cooked beef', 'cooked-protein'],
+    ['chicken', 'raw-poultry'], ['chicken breast', 'raw-poultry'], ['chicken thigh', 'raw-poultry'], ['turkey', 'raw-poultry'],
+    ['beef', 'raw-meat'], ['steak', 'raw-meat'], ['pork', 'raw-meat'], ['pork chop', 'raw-meat'], ['lamb', 'raw-meat'],
+    ['ground beef', 'raw-ground-meat'], ['minced beef', 'raw-ground-meat'], ['ground pork', 'raw-ground-meat'], ['minced pork', 'raw-ground-meat'],
+    ['fish', 'raw-fish'], ['salmon', 'raw-fish'], ['cod', 'raw-fish'], ['tilapia', 'raw-fish'], ['tuna', 'raw-fish'], ['shrimp', 'raw-fish'], ['prawns', 'raw-fish']
   ];
   const $ = id => document.getElementById(id);
   const todayISO = () => {
@@ -57,6 +65,18 @@
   };
   const list = values => new Intl.ListFormat('en', { style: 'long', type: 'conjunction' }).format(values);
   const named = (items, ...types) => list(items.filter(item => types.includes(item.type)).map(item => item.name));
+  const cookRaw = ({ names, has, items }) => {
+    const steps = [];
+    if (has('raw-poultry')) steps.push(`Cook ${names('raw-poultry')} in a clean pan to 74°C / 165°F.`);
+    if (has('raw-ground-meat')) steps.push(`Cook ${names('raw-ground-meat')} in a clean pan to 71°C / 160°F.`);
+    if (has('raw-meat')) steps.push(`Cook ${names('raw-meat')} in a clean pan to 63°C / 145°F, then rest it for 3 minutes.`);
+    const seafood = items.filter(item => item.type === 'raw-fish');
+    const shellfish = seafood.filter(item => /\b(shrimp|prawns?)\b/i.test(item.name));
+    const fish = seafood.filter(item => !shellfish.includes(item));
+    if (fish.length) steps.push(`Cook ${list(fish.map(item => item.name))} in a clean pan to 63°C / 145°F.`);
+    if (shellfish.length) steps.push(`Cook ${list(shellfish.map(item => item.name))} in a clean pan until opaque throughout.`);
+    return steps.join(' ');
+  };
 
   const recipes = [
     {
@@ -258,6 +278,99 @@
         `Toss the vegetables together${names('cheese', 'nuts') ? ` with ${names('cheese', 'nuts')}` : ''}.`,
         'Add any dressing you already have and serve.'
       ]
+    },
+    {
+      title: 'Chicken and vegetable skillet',
+      intro: 'Chicken and the vegetables you need to use, cooked in one pan.',
+      slots: [['raw-poultry'], VEG], extras: ['cooked-rice'],
+      steps: (ctx) => {
+        const { names } = ctx;
+        return [
+          cookRaw(ctx),
+          `${names(...FRESH_VEG) ? `In the same pan, cook ${names(...FRESH_VEG)} until tender.` : ''}${names('cooked-veg') ? ` Reheat ${names('cooked-veg')} until thoroughly hot.` : ''}`.trim(),
+          names('cooked-rice') ? `Reheat ${names('cooked-rice')} until thoroughly hot and serve with the chicken and vegetables.` : 'Serve the chicken and vegetables together.'
+        ];
+      }
+    },
+    {
+      title: 'Chicken fried rice',
+      intro: 'Turn leftover rice and chicken into dinner.',
+      slots: [['raw-poultry'], ['cooked-rice']], extras: VEG,
+      steps: (ctx) => {
+        const { names } = ctx;
+        return [cookRaw(ctx), names(...FRESH_VEG) ? `Cook ${names(...FRESH_VEG)} in the same pan until tender.` : 'Keep the cooked chicken warm.',
+          `Add ${names('cooked-rice')}${names('cooked-veg') ? ` and ${names('cooked-veg')}` : ''}. Stir until the cooked leftovers are thoroughly hot, then mix in the chicken.`];
+      }
+    },
+    {
+      title: 'Beef or pork with vegetables',
+      intro: 'A quick pan meal for meat and spare vegetables.',
+      slots: [['raw-meat', 'raw-ground-meat'], VEG], extras: ['cooked-rice', 'cooked-noodles'],
+      steps: (ctx) => {
+        const { names } = ctx;
+        return [cookRaw(ctx), `${names(...FRESH_VEG) ? `Cook ${names(...FRESH_VEG)} until tender.` : ''}${names('cooked-veg') ? ` Reheat ${names('cooked-veg')} until thoroughly hot.` : ''}`.trim(),
+          names('cooked-rice', 'cooked-noodles') ? `Reheat ${names('cooked-rice', 'cooked-noodles')} until thoroughly hot and serve with the meat and vegetables.` : 'Put the meat and vegetables together and season to taste.'];
+      }
+    },
+    {
+      title: 'Meat and tomato pasta',
+      intro: 'Use cooked pasta with beef or pork and a tomato.',
+      slots: [['raw-meat', 'raw-ground-meat'], ['cooked-pasta'], ['tomato', 'canned-tomato']], extras: ['onion', 'mushrooms', 'cheese'],
+      steps: (ctx) => {
+        const { names } = ctx;
+        return [cookRaw(ctx), names('onion', 'mushrooms') ? `Cook ${names('onion', 'mushrooms')} until tender, then add ${names('tomato', 'canned-tomato')}.` : `Add ${names('tomato', 'canned-tomato')} to the pan and cook until softened.`,
+          `Add ${names('cooked-pasta')} and heat until thoroughly hot. Mix in the meat${names('cheese') ? ` and finish with ${names('cheese')}` : ''}.`];
+      }
+    },
+    {
+      title: 'Fish with potatoes',
+      intro: 'A simple plate from fish, potatoes, and any spare vegetables.',
+      slots: [['raw-fish'], ['raw-potato', 'cooked-potato']], extras: VEG,
+      steps: (ctx) => {
+        const { names, has } = ctx;
+        return [`${has('raw-potato') ? `Cut ${names('raw-potato')} and cook until fully tender.` : ''}${has('cooked-potato') ? ` Reheat ${names('cooked-potato')} until thoroughly hot.` : ''}`.trim(),
+          cookRaw(ctx), `${names(...FRESH_VEG) ? `Cook ${names(...FRESH_VEG)} until tender.` : ''}${names('cooked-veg') ? ` Reheat ${names('cooked-veg')} until thoroughly hot.` : ''} Serve with the fish and potatoes.`.trim()];
+      }
+    },
+    {
+      title: 'Fish and rice bowl',
+      intro: 'A warm bowl using fish and leftover rice.',
+      slots: [['raw-fish'], ['cooked-rice']], extras: VEG,
+      steps: (ctx) => {
+        const { names } = ctx;
+        return [cookRaw(ctx), `Reheat ${names('cooked-rice')} until thoroughly hot.`,
+          `${names(...FRESH_VEG) ? `Wash and prepare ${names(...FRESH_VEG)}. Cook any vegetables you prefer warm.` : ''}${names('cooked-veg') ? ` Reheat ${names('cooked-veg')} thoroughly.` : ''} Put the fish over the rice and serve.`.trim()];
+      }
+    },
+    {
+      title: 'Chicken wrap',
+      intro: 'Chicken and a wrap can take in the last bits of vegetables.',
+      slots: [['raw-poultry'], ['tortilla']], extras: [...FRESH_VEG, 'cooked-veg', 'cheese', 'yogurt'],
+      steps: (ctx) => {
+        const { names } = ctx;
+        return [cookRaw(ctx), names('cooked-veg') ? `Reheat ${names('cooked-veg')} thoroughly; wash and cut any fresh vegetables.` : 'Wash and cut any fresh vegetables you want in the wrap.',
+          `Fill ${names('tortilla')} with the chicken${names(...FRESH_VEG, 'cooked-veg', 'cheese', 'yogurt') ? ` and ${names(...FRESH_VEG, 'cooked-veg', 'cheese', 'yogurt')}` : ''}. Fold and serve.`];
+      }
+    },
+    {
+      title: 'Tomato and egg pan',
+      intro: 'Eggs and tomatoes make a quick meal with bread if you have it.',
+      slots: [['eggs'], ['tomato', 'canned-tomato']], extras: ['onion', 'pepper', 'bread', 'cheese'],
+      steps: ({ names }) => [
+        `Cook ${names('tomato', 'canned-tomato', 'onion', 'pepper')} in a pan until the vegetables soften.`,
+        `Crack in ${names('eggs')} and cook until the whites and yolks are fully set.`,
+        names('bread', 'cheese') ? `Serve with ${names('bread', 'cheese')}.` : 'Season and serve hot.'
+      ]
+    },
+    {
+      title: 'Bean and cheese wrap',
+      intro: 'A warm wrap for beans and the last bit of cheese.',
+      slots: [['tortilla'], BEANS, ['cheese']], extras: ['tomato', 'onion', 'pepper'],
+      steps: ({ names }) => [
+        names('onion', 'pepper') ? `Cook ${names('onion', 'pepper')} until tender.` : 'Heat a pan over medium heat.',
+        `Drain any canned beans, then heat ${names(...BEANS)} thoroughly.`,
+        `Add the beans${names('tomato', 'onion', 'pepper') ? ` and ${names('tomato', 'onion', 'pepper')}` : ''} with ${names('cheese')} to ${names('tortilla')}. Fold and toast until the cheese melts.`
+      ]
     }
   ];
 
@@ -285,7 +398,8 @@
   function savePlan() { try { localStorage.setItem(PLAN_KEY, JSON.stringify(twoDayPlan)); } catch {} }
   function resetPlan() { twoDayPlan = null; savePlan(); }
   function recognizedItem(item) { return parseFood(item.name)?.type === item.type; }
-  function eligible(item, dayOffset = 0) { return recognizedItem(item) && (!COOKED.has(item.type) || (dayDiff(item.date) >= 0 && dayDiff(item.date) + dayOffset <= 4)); }
+  function maxFridgeDays(type) { return RAW.has(type) ? type === 'raw-meat' ? 5 : 2 : 4; }
+  function eligible(item, dayOffset = 0) { return recognizedItem(item) && (!DATED.has(item.type) || (dayDiff(item.date) >= 0 && dayDiff(item.date) + dayOffset <= maxFridgeDays(item.type))); }
   function ideasFor(items, dayOffset = 0) {
     const available = items.filter(item => eligible(item, dayOffset)).sort((a, b) => a.date.localeCompare(b.date));
     return recipes.map(recipe => {
@@ -298,16 +412,16 @@
       const relevant = new Set([...recipe.slots.flat(), ...recipe.extras]);
       for (const item of available) if (relevant.has(item.type)) ids.add(item.id);
       const used = available.filter(item => ids.has(item.id));
-      const urgency = used.reduce((sum, item) => sum + (COOKED.has(item.type) ? 8 + dayDiff(item.date) * 5 : 0), 0);
+      const urgency = used.reduce((sum, item) => sum + (DATED.has(item.type) ? 8 + dayDiff(item.date) * 5 + (RAW.has(item.type) ? 6 : 0) : 0), 0);
       return { recipe, used, missing, score: used.length * 100 + urgency + recipe.slots.length * 5 - missing.length * 250 };
     }).filter(idea => idea.used.length).sort((a, b) => b.score - a.score);
   }
   function completeIdeas(items, dayOffset = 0) { return ideasFor(items, dayOffset).filter(idea => !idea.missing.length); }
-  function context(used) { return { names: (...types) => named(used, ...types), has: type => used.some(item => item.type === type) }; }
+  function context(used) { return { items: used, names: (...types) => named(used, ...types), has: type => used.some(item => item.type === type) }; }
 
   function simpleName(name) {
     return name.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, ' ')
-      .replace(/\b(?:\d+|a|an|the|of|half|quarter|one|two|three|four|some|few|last|night|s|bit|ripe|plain|left|over|leftover|leftovers|cooked|fresh|small|large|can|tin|tinned|canned|yesterday|reheated|fried|grilled|roasted|baked|boiled|steamed)\b/g, ' ')
+      .replace(/\b(?:\d+|a|an|the|of|half|quarter|one|two|three|four|some|few|last|night|s|bit|ripe|plain|left|over|leftover|leftovers|cooked|fresh|raw|uncooked|small|large|can|tin|tinned|canned|yesterday|reheated|fried|grilled|roasted|baked|boiled|steamed)\b/g, ' ')
       .replace(/\s+/g, ' ').trim();
   }
   function editDistance(a, b) {
@@ -356,7 +470,11 @@
     if (/\bhummus\b/.test(value)) return 'hummus';
     if (/\b(peanut|almond) butter\b/.test(value)) return 'peanut-butter';
     if (/\b(almonds?|walnuts?|peanuts?|nuts?|sunflower seeds?|pumpkin seeds?)\b/.test(value)) return 'nuts';
-    if (/\b(chicken|beef|pork|turkey|fish|salmon|tofu|meat)\b/.test(value)) return cooked ? 'cooked-protein' : '';
+    if (/\b(chicken|turkey)\b/.test(value)) return cooked ? 'cooked-protein' : 'raw-poultry';
+    if (/\b(ground|minced|mince)\s+(beef|pork|lamb)\b/.test(value)) return cooked ? 'cooked-protein' : 'raw-ground-meat';
+    if (/\b(beef|steak|pork|lamb)\b/.test(value)) return cooked ? 'cooked-protein' : 'raw-meat';
+    if (/\b(fish|salmon|cod|tilapia|tuna|shrimp|prawns?)\b/.test(value)) return cooked ? 'cooked-protein' : 'raw-fish';
+    if (/\btofu\b/.test(value)) return cooked ? 'cooked-protein' : '';
     if (/\b(zucchini|courgette|eggplant|aubergine|cauliflower|vegetables?|peas|asparagus)\b/.test(value)) return cooked ? 'cooked-veg' : 'fresh-veg';
     if (/\b(tortillas?|wraps?|flatbread|pita)\b/.test(value)) return 'tortilla';
     if (/\b(bread|toast|bagel|rolls?|sourdough)\b/.test(value)) return 'bread';
@@ -372,7 +490,7 @@
     const match = matchIngredient(name);
     if (!match) return null;
     const corrected = match.distance > 0 && !guessType(name);
-    const prefix = name.match(/^\s*(?:leftover|cooked|canned|tinned|fried|grilled|roasted|baked|boiled|steamed)\s+/i)?.[0] || '';
+    const prefix = name.match(/^\s*(?:leftover|cooked|raw|uncooked|canned|tinned|fried|grilled|roasted|baked|boiled|steamed)\s+/i)?.[0] || '';
     const displayName = corrected ? `${prefix}${match.label}`.trim() : name;
     const type = guessType(displayName) || match.type;
     return { name: displayName, originalName: name, type, date: '' };
@@ -389,8 +507,8 @@
         const correction = document.createElement('em'); correction.textContent = `Spelling fixed from “${item.originalName}”`;
         row.append(correction);
       }
-      const dateRow = document.createElement('div'); dateRow.className = 'review-date'; dateRow.hidden = !COOKED.has(item.type);
-      const dateLabel = document.createElement('label'); dateLabel.htmlFor = `review-date-${index}`; dateLabel.textContent = 'Cooked on';
+      const dateRow = document.createElement('div'); dateRow.className = 'review-date'; dateRow.hidden = !DATED.has(item.type);
+      const dateLabel = document.createElement('label'); dateLabel.htmlFor = `review-date-${index}`; dateLabel.textContent = RAW.has(item.type) ? 'In fridge since' : 'Cooked on';
       const date = document.createElement('input'); date.id = `review-date-${index}`; date.type = 'date'; date.max = todayISO(); date.value = item.date;
       date.addEventListener('change', () => { item.date = date.value; });
       dateRow.append(dateLabel, date); row.append(dateRow); holder.append(row);
@@ -411,17 +529,17 @@
       const number = document.createElement('span'); number.className = 'food-number'; number.textContent = String(index + 1).padStart(2, '0');
       const main = document.createElement('div'); main.className = 'food-main';
       const strong = document.createElement('strong'); strong.textContent = item.name;
-      const small = document.createElement('small'); small.textContent = `${LABEL[item.type]}${COOKED.has(item.type) ? ` · cooked ${item.date}` : ''}${recognizedItem(item) ? eligible(item) ? '' : ' · past four days; not used in ideas' : ' · unrecognized; not used in ideas'}`;
+      const small = document.createElement('small'); small.textContent = `${LABEL[item.type]}${DATED.has(item.type) ? ` · ${RAW.has(item.type) ? 'in fridge since' : 'cooked'} ${item.date}` : ''}${recognizedItem(item) ? eligible(item) ? '' : ` · past ${maxFridgeDays(item.type)} days; not used in ideas` : ' · unrecognized; not used in ideas'}`;
       main.append(strong, small);
       const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = '×'; remove.setAttribute('aria-label', `Remove ${item.name}`);
       remove.addEventListener('click', () => { pantry = pantry.filter(food => food.id !== item.id); savePantry(); resetPlan(); currentIdea = 0; render(); });
       row.append(number, main, remove); holder.append(row);
     }
     const unrecognized = pantry.filter(item => !recognizedItem(item)).length;
-    const overdue = pantry.filter(item => recognizedItem(item) && COOKED.has(item.type) && !eligible(item)).length;
+    const overdue = pantry.filter(item => recognizedItem(item) && DATED.has(item.type) && !eligible(item)).length;
     const notes = [];
     if (unrecognized) notes.push(`${unrecognized} older item${unrecognized === 1 ? ' is' : 's are'} unrecognized and left out of meal ideas. Remove and re-add with a food name.`);
-    if (overdue) notes.push(`${overdue} cooked item${overdue === 1 ? ' is' : 's are'} past four days and left out of meal ideas.`);
+    if (overdue) notes.push(`${overdue} dated item${overdue === 1 ? ' is' : 's are'} past its fridge window and left out of meal ideas.`);
     $('overdue-note').hidden = !notes.length;
     $('overdue-note').textContent = notes.join(' ');
   }
@@ -486,7 +604,7 @@
       const secondIdeas = completeIdeas(remaining, 1);
       for (const second of [null, ...secondIdeas]) {
         const count = first.used.length + (second?.used.length || 0);
-        const urgency = first.used.reduce((sum, item) => sum + (COOKED.has(item.type) ? 10 + dayDiff(item.date) * 6 : 0), 0);
+        const urgency = first.used.reduce((sum, item) => sum + (DATED.has(item.type) ? 10 + dayDiff(item.date) * 6 + (RAW.has(item.type) ? 6 : 0) : 0), 0);
         const score = count * 100 + urgency + (second ? 30 : 0) - (second?.recipe.title === first.recipe.title ? 5 : 0);
         if (!best || score > best.score) best = { first, second, score };
       }
@@ -507,9 +625,7 @@
     else if (pantry.length + names.length > 60) error = 'Your kitchen list has room for 60 foods. Remove a few first.';
     const parsed = error ? [] : names.map(parseFood);
     const unknown = parsed.findIndex(item => !item);
-    if (!error && unknown >= 0) error = /\b(raw|uncooked)\s+(chicken|beef|pork|turkey|fish|salmon|meat)\b/i.test(names[unknown])
-      ? 'This tool uses cooked meat or fish, and canned fish. Add it after cooking.'
-      : `I don't recognize “${names[unknown]}” yet. Try a specific food name or check the spelling.`;
+    if (!error && unknown >= 0) error = `I don't recognize “${names[unknown]}” yet. Try a specific food name or check the spelling.`;
     $('form-error').hidden = !error; $('form-error').textContent = error;
     if (error) return;
     draft = parsed;
@@ -518,12 +634,12 @@
     $('review').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
   $('add-reviewed').addEventListener('click', () => {
-    const missingDate = draft.find(item => COOKED.has(item.type) && !item.date);
-    const futureDate = draft.find(item => COOKED.has(item.type) && item.date && dayDiff(item.date) < 0);
-    const error = missingDate ? `Add the cooked date for ${missingDate.name}.` : futureDate ? `The cooked date for ${futureDate.name} cannot be in the future.` : '';
+    const missingDate = draft.find(item => DATED.has(item.type) && !item.date);
+    const futureDate = draft.find(item => DATED.has(item.type) && item.date && dayDiff(item.date) < 0);
+    const error = missingDate ? `Add the ${RAW.has(missingDate.type) ? 'fridge' : 'cooked'} date for ${missingDate.name}.` : futureDate ? `The date for ${futureDate.name} cannot be in the future.` : '';
     $('review-error').hidden = !error; $('review-error').textContent = error;
     if (error) return;
-    for (const item of draft) pantry.push({ id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`, name: item.name, type: item.type, date: COOKED.has(item.type) ? item.date : todayISO() });
+    for (const item of draft) pantry.push({ id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`, name: item.name, type: item.type, date: DATED.has(item.type) ? item.date : todayISO() });
     savePantry(); resetPlan(); currentIdea = 0; draft = []; $('add-form').reset(); renderReview(); render();
   });
   $('clear-list').addEventListener('click', () => {
