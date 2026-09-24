@@ -269,7 +269,10 @@
   function readPantry() {
     try {
       const value = JSON.parse(localStorage.getItem(KEY) || '[]');
-      return Array.isArray(value) ? value.filter(item => item && typeof item.id === 'string' && typeof item.name === 'string' && Object.hasOwn(LABEL, item.type) && /^\d{4}-\d{2}-\d{2}$/.test(item.date)).slice(0, 60) : [];
+      return Array.isArray(value) ? value.filter(item => item && typeof item.id === 'string' && typeof item.name === 'string' && Object.hasOwn(LABEL, item.type) && /^\d{4}-\d{2}-\d{2}$/.test(item.date)).slice(0, 60).map(item => {
+        const recognized = parseFood(item.name);
+        return recognized?.type === item.type && recognized.name !== item.name ? { ...item, name: recognized.name } : item;
+      }) : [];
     } catch { return []; }
   }
   function savePantry() { try { localStorage.setItem(KEY, JSON.stringify(pantry)); } catch {} }
