@@ -4,7 +4,7 @@ A few leftovers in the kitchen, but no clear idea what to do with them. Use Firs
 
 **[Try the tool](https://obstudio.org/tools/use-first/)**
 
-Paste your food as a comma-separated list or put one item on each line. The tool guesses the food types, and you can correct them before adding everything. It then shows meals you can make from the foods on your list. If the list can make two separate meals, a second button splits the food between them so the same item is never counted twice.
+Paste your food as a comma-separated list or put one item on each line. If a name is misspelled or incomplete, the tool offers the closest known ingredients as you type. You can check the food types before adding everything. It then shows meals you can make from the foods on your list. If the list can make two separate meals, a second button splits the food between them so the same item is never counted twice.
 
 For example, entering `leftover rice, half a tomato, ripe banana, plain yogurt` can give you fried rice for one meal and a fruit-and-yogurt bowl for the next. The list starts empty; that example is only here to show how it works.
 
@@ -16,7 +16,7 @@ There are plenty of recipe search sites. This one focuses on leftovers already i
 
 ## How it works
 
-The app is plain HTML, CSS and JavaScript. It has 25 food types and a set of flexible meal patterns, including fried rice, noodle stir-fry, a tortilla melt, potato hash, soup, oatmeal, and fruit with yogurt. It only presents a meal as complete when it matches the foods you entered. When it cannot make a complete match, it suggests one type of food that could help.
+The app is plain HTML, CSS and JavaScript. It recognizes over 90 common ingredient names, groups them into 36 food types, and suggests close names with a small edit-distance matcher. Its flexible meal patterns include fried rice, noodle stir-fry, a tortilla melt, bean salad, hummus wraps, potato hash, soup, oatmeal, and fruit with yogurt. It only presents a meal as complete when it matches the foods you entered. When it cannot make a complete match, it suggests one type of food that could help.
 
 Cooked leftovers need a cooked date. Food more than four days old is kept out of meal suggestions; see the [USDA guidance](https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/leftovers-and-food-safety) for storage and reheating. The app cannot check how food was stored or whether it is spoiled.
 
@@ -28,4 +28,4 @@ To run it yourself, open `index.html` in a browser or serve this folder as stati
 
 This project was made for the [Acodemic × G.I.R.L.S. Global SDG Hackathon](https://acodemic-hackathon.devpost.com/). The [rules](https://acodemic-hackathon.devpost.com/rules) allow AI tools and require participants to have rights to the content they submit. The project must clearly connect to an SDG and work in a browser or app. The overview lists students aged 13+ as eligible, with companies and professional organizations excluded.
 
-A submission needs the public link, a description explaining the idea and SDG connection, **at least three screenshots**, the technologies used, and source code. A 1–5 minute video is optional. The deadline listed by Devpost is **September 26, 2026 at 11:45 p.m. CDT** (**September 27 at 1:45 p.m. Korea time**). This repository contains the source; the three screenshots are prepared separately for the Devpost entry.
+A submission needs the public link, a description explaining the idea and SDG connection, **at least three screenshots**, the technologies used, and source code. A 1–5 minute video is optional. The deadline listed by Devpost is **September 26, 2026 at 11:45 p.m. CDT** (**September 27 at 1:45 p.m. Korea time**). This repository contains the source; four screenshots are prepared separately for the Devpost entry.

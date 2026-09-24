@@ -11,11 +11,40 @@
     'fresh-veg': 'fresh vegetables', greens: 'leafy greens', tomato: 'tomatoes', onion: 'onions',
     mushrooms: 'mushrooms', 'raw-potato': 'potatoes', bread: 'bread', tortilla: 'wraps or tortillas',
     eggs: 'eggs', fruit: 'fruit or berries', cheese: 'cheese', yogurt: 'yogurt', milk: 'milk',
-    oats: 'oats', 'canned-beans': 'canned beans or lentils', 'canned-tomato': 'canned tomatoes'
+    oats: 'oats', 'canned-beans': 'canned beans or lentils', 'canned-tomato': 'canned tomatoes',
+    carrot: 'carrots', pepper: 'peppers', broccoli: 'broccoli', cucumber: 'cucumber',
+    cabbage: 'cabbage', corn: 'corn', avocado: 'avocado', hummus: 'hummus',
+    'peanut-butter': 'peanut butter', nuts: 'nuts or seeds', 'canned-fish': 'canned fish'
   };
-  const FRESH_VEG = ['fresh-veg', 'greens', 'tomato', 'onion', 'mushrooms'];
+  const FRESH_VEG = ['fresh-veg', 'greens', 'tomato', 'onion', 'mushrooms', 'carrot', 'pepper', 'broccoli', 'cabbage', 'corn'];
   const VEG = ['cooked-veg', ...FRESH_VEG];
   const BEANS = ['cooked-beans', 'canned-beans'];
+  const INGREDIENTS = [
+    ['rice', 'cooked-rice'], ['fried rice', 'cooked-rice'], ['risotto', 'cooked-rice'],
+    ['pasta', 'cooked-pasta'], ['spaghetti', 'cooked-pasta'], ['macaroni', 'cooked-pasta'], ['penne', 'cooked-pasta'],
+    ['noodles', 'cooked-noodles'], ['ramen', 'cooked-noodles'], ['udon', 'cooked-noodles'], ['soba', 'cooked-noodles'],
+    ['quinoa', 'cooked-grain'], ['couscous', 'cooked-grain'], ['bulgur', 'cooked-grain'], ['barley', 'cooked-grain'],
+    ['potato', 'raw-potato'], ['sweet potato', 'raw-potato'], ['mashed potato', 'cooked-potato'],
+    ['beans', 'canned-beans'], ['black beans', 'canned-beans'], ['kidney beans', 'canned-beans'], ['lentils', 'canned-beans'], ['chickpeas', 'canned-beans'],
+    ['tomato', 'tomato'], ['cherry tomatoes', 'tomato'], ['canned tomatoes', 'canned-tomato'],
+    ['onion', 'onion'], ['shallot', 'onion'], ['spring onion', 'onion'], ['mushroom', 'mushrooms'],
+    ['spinach', 'greens'], ['lettuce', 'greens'], ['kale', 'greens'], ['arugula', 'greens'],
+    ['carrot', 'carrot'], ['bell pepper', 'pepper'], ['capsicum', 'pepper'], ['broccoli', 'broccoli'],
+    ['cucumber', 'cucumber'], ['cabbage', 'cabbage'], ['corn', 'corn'], ['sweetcorn', 'corn'], ['avocado', 'avocado'],
+    ['zucchini', 'fresh-veg'], ['courgette', 'fresh-veg'], ['eggplant', 'fresh-veg'], ['aubergine', 'fresh-veg'],
+    ['cauliflower', 'fresh-veg'], ['peas', 'fresh-veg'], ['green beans', 'fresh-veg'], ['asparagus', 'fresh-veg'],
+    ['tortilla', 'tortilla'], ['wrap', 'tortilla'], ['flatbread', 'tortilla'], ['pita', 'tortilla'],
+    ['bread', 'bread'], ['bagel', 'bread'], ['roll', 'bread'], ['sourdough', 'bread'], ['egg', 'eggs'],
+    ['yogurt', 'yogurt'], ['yoghurt', 'yogurt'], ['cheese', 'cheese'], ['cheddar', 'cheese'],
+    ['mozzarella', 'cheese'], ['parmesan', 'cheese'], ['feta', 'cheese'], ['milk', 'milk'],
+    ['oats', 'oats'], ['oatmeal', 'oats'], ['banana', 'fruit'], ['apple', 'fruit'], ['pear', 'fruit'],
+    ['orange', 'fruit'], ['mango', 'fruit'], ['strawberry', 'fruit'], ['blueberry', 'fruit'],
+    ['grapes', 'fruit'], ['peach', 'fruit'], ['pineapple', 'fruit'], ['melon', 'fruit'],
+    ['hummus', 'hummus'], ['peanut butter', 'peanut-butter'], ['almond butter', 'peanut-butter'],
+    ['almonds', 'nuts'], ['walnuts', 'nuts'], ['peanuts', 'nuts'], ['sunflower seeds', 'nuts'], ['pumpkin seeds', 'nuts'],
+    ['canned tuna', 'canned-fish'], ['tinned tuna', 'canned-fish'], ['canned salmon', 'canned-fish'], ['sardines', 'canned-fish'],
+    ['cooked chicken', 'cooked-protein'], ['cooked tofu', 'cooked-protein'], ['cooked fish', 'cooked-protein'], ['cooked beef', 'cooked-protein']
+  ];
   const $ = id => document.getElementById(id);
   const todayISO = () => {
     const now = new Date();
@@ -35,7 +64,7 @@
       intro: 'A hot pan makes yesterday’s rice and spare vegetables feel like dinner.',
       slots: [['cooked-rice'], VEG], extras: ['cooked-protein', ...BEANS, 'eggs'],
       steps: ({ names, has }) => [
-        names(...FRESH_VEG) ? `Chop ${names(...FRESH_VEG)} and cook in a little oil until tender.${has('cooked-veg') ? ` Add ${names('cooked-veg')} and reheat.` : ''}` : `Reheat ${names('cooked-veg')} in a lightly oiled pan.`,
+        names(...FRESH_VEG) ? `Prepare ${names(...FRESH_VEG)} and cook in a little oil until tender.${has('cooked-veg') ? ` Add ${names('cooked-veg')} and reheat.` : ''}` : `Reheat ${names('cooked-veg')} in a lightly oiled pan.`,
         `Add ${names('cooked-rice')}${names('cooked-protein', ...BEANS) ? ` and ${names('cooked-protein', ...BEANS)}` : ''}. Stir until the rice and any cooked leftovers are thoroughly hot.`,
         has('eggs') ? `Cook ${names('eggs')} fully in the pan, then mix through.` : 'Season with what you have and serve hot.'
       ]
@@ -45,7 +74,7 @@
       intro: 'Leftover pasta, a pan, and whatever vegetables or protein are around.',
       slots: [['cooked-pasta'], [...VEG, 'canned-tomato', 'cooked-protein', ...BEANS]], extras: ['cheese'],
       steps: ({ names }) => [
-        names(...FRESH_VEG) ? `Chop and cook ${names(...FRESH_VEG)} in a little oil until tender.` : 'Heat a little oil in a pan.',
+        names(...FRESH_VEG) ? `Prepare and cook ${names(...FRESH_VEG)} in a little oil until tender.` : 'Heat a little oil in a pan.',
         `Add ${names('cooked-pasta')}${names('cooked-veg', 'canned-tomato', 'cooked-protein', ...BEANS) ? ` with ${names('cooked-veg', 'canned-tomato', 'cooked-protein', ...BEANS)}` : ''}. Toss until all cooked leftovers are thoroughly hot.`,
         names('cheese') ? `Finish with ${names('cheese')} and serve.` : 'Season to taste and serve.'
       ]
@@ -55,7 +84,7 @@
       intro: 'Give cooked noodles a quick second life in a hot pan.',
       slots: [['cooked-noodles'], [...VEG, 'cooked-protein', ...BEANS]], extras: ['eggs'],
       steps: ({ names, has }) => [
-        names(...FRESH_VEG) ? `Chop ${names(...FRESH_VEG)} and cook until tender.` : 'Heat a lightly oiled pan.',
+        names(...FRESH_VEG) ? `Prepare and cook ${names(...FRESH_VEG)} until tender.` : 'Heat a lightly oiled pan.',
         `Add ${names('cooked-noodles')}${names('cooked-veg', 'cooked-protein', ...BEANS) ? ` and ${names('cooked-veg', 'cooked-protein', ...BEANS)}` : ''}. Toss until the cooked leftovers are thoroughly reheated.`,
         has('eggs') ? `Cook ${names('eggs')} fully in the pan, then mix through.` : 'Add any seasoning you already have and serve.'
       ]
@@ -85,7 +114,7 @@
       intro: 'A wrap and a little cheese make a useful base for small leftovers.',
       slots: [['tortilla'], ['cheese']], extras: [...VEG, 'cooked-protein', ...BEANS],
       steps: ({ names }) => [
-        names(...FRESH_VEG) ? `Chop and cook ${names(...FRESH_VEG)} until tender.` : 'Heat a pan over medium heat.',
+        names(...FRESH_VEG) ? `Prepare and cook ${names(...FRESH_VEG)} until tender.` : 'Heat a pan over medium heat.',
         names('cooked-veg', 'cooked-protein', ...BEANS) ? `Reheat ${names('cooked-veg', 'cooked-protein', ...BEANS)} thoroughly.` : 'Keep the pan ready for the wrap.',
         `Put ${names('cheese')}${names(...VEG, 'cooked-protein', ...BEANS) ? ` and ${names(...VEG, 'cooked-protein', ...BEANS)}` : ''} inside ${names('tortilla')}. Fold and toast both sides until the cheese melts.`
       ]
@@ -96,7 +125,7 @@
       slots: [['bread'], ['cheese', ...VEG, 'cooked-protein', ...BEANS]], extras: [],
       steps: ({ names }) => [
         `Toast ${names('bread')}.`,
-        `${names(...FRESH_VEG) ? `Wash and cut ${names(...FRESH_VEG)}. ` : ''}${names('cooked-veg', 'cooked-protein', ...BEANS) ? `Reheat ${names('cooked-veg', 'cooked-protein', ...BEANS)} thoroughly.` : ''}` || 'Prepare the topping.',
+        `${names(...FRESH_VEG) ? `Prepare ${names(...FRESH_VEG)} for the topping. ` : ''}${names('cooked-veg', 'cooked-protein', ...BEANS) ? `Reheat ${names('cooked-veg', 'cooked-protein', ...BEANS)} thoroughly.` : ''}` || 'Prepare the topping.',
         `Pile ${names('cheese', ...VEG, 'cooked-protein', ...BEANS)} onto the toast and serve.`
       ]
     },
@@ -115,7 +144,7 @@
       intro: 'A small pot can bring several separate leftovers together.',
       slots: [[...VEG, 'canned-tomato'], [...VEG, 'canned-tomato', 'cooked-protein', ...BEANS, 'cooked-rice', 'cooked-pasta', 'cooked-noodles', 'cooked-grain']], extras: [],
       steps: ({ names }) => [
-        names(...FRESH_VEG) ? `Chop ${names(...FRESH_VEG)} and simmer in enough water to cover until tender.` : 'Bring a pot of water to a simmer.',
+        names(...FRESH_VEG) ? `Prepare ${names(...FRESH_VEG)} and simmer in enough water to cover until tender.` : 'Bring a pot of water to a simmer.',
         names('cooked-veg', 'canned-tomato', 'cooked-protein', ...BEANS, 'cooked-rice', 'cooked-pasta', 'cooked-noodles', 'cooked-grain') ? `Add ${names('cooked-veg', 'canned-tomato', 'cooked-protein', ...BEANS, 'cooked-rice', 'cooked-pasta', 'cooked-noodles', 'cooked-grain')}. Simmer until all cooked leftovers are thoroughly hot.` : 'Keep simmering until the vegetables are cooked through.',
         'Season with what you have and serve.'
       ]
@@ -179,6 +208,56 @@
         names('cooked-veg') ? `Reheat ${names('cooked-veg')} thoroughly, then add ${names('eggs')} and cook until fully set.` : `Add ${names('eggs')} and cook until fully set.`,
         names('bread') ? `Serve with ${names('bread')}.` : 'Serve hot.'
       ]
+    },
+    {
+      title: 'Hummus and veg wrap',
+      intro: 'A quick way to use the last bits of fresh vegetables.',
+      slots: [['tortilla'], ['hummus']], extras: [...FRESH_VEG, 'cucumber', 'avocado'],
+      steps: ({ names }) => [
+        names(...FRESH_VEG, 'cucumber', 'avocado') ? `Prepare ${names(...FRESH_VEG, 'cucumber', 'avocado')}: wash fresh produce and drain anything canned.` : 'Set out a plate for the wrap.',
+        `Spread ${names('hummus')} on ${names('tortilla')}.`,
+        names(...FRESH_VEG, 'cucumber', 'avocado') ? `Add ${names(...FRESH_VEG, 'cucumber', 'avocado')}, roll up, and eat.` : 'Roll up and eat.'
+      ]
+    },
+    {
+      title: 'Peanut butter toast',
+      intro: 'A fast use for bread, with fruit if you have some.',
+      slots: [['bread'], ['peanut-butter']], extras: ['fruit', 'nuts'],
+      steps: ({ names }) => [
+        `Toast ${names('bread')}.`,
+        `Spread ${names('peanut-butter')} on the toast.`,
+        names('fruit', 'nuts') ? `Add ${names('fruit', 'nuts')} on top and eat.` : 'Eat while warm.'
+      ]
+    },
+    {
+      title: 'Bean and vegetable salad',
+      intro: 'Beans and a few fresh vegetables make a no-cook lunch.',
+      slots: [BEANS, ['tomato', 'carrot', 'pepper', 'cucumber', 'cabbage', 'corn', 'greens']], extras: ['avocado', 'cheese', 'nuts'],
+      steps: ({ names }) => [
+        names('canned-beans') ? `Drain and rinse ${names('canned-beans')}.` : `Use ${names('cooked-beans')} only if it has been kept cold since cooking.`,
+        `Prepare ${names('tomato', 'carrot', 'pepper', 'cucumber', 'cabbage', 'corn', 'greens', 'avocado')}: wash fresh produce and drain anything canned.`,
+        `Mix with the beans${names('cheese', 'nuts') ? ` and ${names('cheese', 'nuts')}` : ''}. Season with what you have and eat promptly.`
+      ]
+    },
+    {
+      title: 'Tuna toast',
+      intro: 'A simple lunch from canned fish and spare bread.',
+      slots: [['bread'], ['canned-fish']], extras: ['tomato', 'cucumber', 'avocado'],
+      steps: ({ names }) => [
+        `Toast ${names('bread')} and drain ${names('canned-fish')}.`,
+        names('tomato', 'cucumber', 'avocado') ? `Wash and cut ${names('tomato', 'cucumber', 'avocado')}.` : 'Flake the fish with a fork.',
+        `Put the fish${names('tomato', 'cucumber', 'avocado') ? ` and ${names('tomato', 'cucumber', 'avocado')}` : ''} on the toast. Eat promptly.`
+      ]
+    },
+    {
+      title: 'Crunchy side salad',
+      intro: 'A place for the last handfuls of fresh vegetables.',
+      slots: [['greens', 'cabbage'], ['tomato', 'carrot', 'pepper', 'cucumber', 'corn']], extras: ['avocado', 'cheese', 'nuts'],
+      steps: ({ names }) => [
+        `Prepare ${names('greens', 'cabbage', 'tomato', 'carrot', 'pepper', 'cucumber', 'corn', 'avocado')}: wash fresh produce, drain anything canned, and cut as needed.`,
+        `Toss the vegetables together${names('cheese', 'nuts') ? ` with ${names('cheese', 'nuts')}` : ''}.`,
+        'Add any dressing you already have and serve.'
+      ]
     }
   ];
 
@@ -222,30 +301,96 @@
   function completeIdeas(items, dayOffset = 0) { return ideasFor(items, dayOffset).filter(idea => !idea.missing.length); }
   function context(used) { return { names: (...types) => named(used, ...types), has: type => used.some(item => item.type === type) }; }
 
-  function guessType(name) {
+  function simpleName(name) {
+    return name.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, ' ')
+      .replace(/\b(?:a|an|the|of|half|some|few|last|bit|ripe|plain|leftover|leftovers|cooked|fresh|small|large|can|tin|tinned|canned)\b/g, ' ')
+      .replace(/\s+/g, ' ').trim();
+  }
+  function editDistance(a, b) {
+    let previous = Array.from({ length: b.length + 1 }, (_, i) => i);
+    for (let i = 1; i <= a.length; i++) {
+      const next = [i];
+      for (let j = 1; j <= b.length; j++) next[j] = Math.min(next[j - 1] + 1, previous[j] + 1, previous[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      previous = next;
+    }
+    return previous[b.length];
+  }
+  function nearestIngredients(name) {
+    const query = simpleName(name);
+    if (query.length < 3) return [];
+    const proteinAllowed = /\b(cooked|leftover|yesterday|reheated)\b/i.test(name);
+    const fishAllowed = /\b(can|canned|tin|tinned|sardines?)\b/i.test(name);
+    return INGREDIENTS.map(([label, type]) => {
+      if (type === 'cooked-protein' && !proteinAllowed) return null;
+      if (type === 'canned-fish' && !fishAllowed) return null;
+      const candidate = simpleName(label);
+      const distance = editDistance(query, candidate);
+      const score = query === candidate ? 100
+        : candidate.startsWith(query) ? 85 + 10 * query.length / candidate.length
+        : query.startsWith(candidate) && candidate.length >= 4 ? 80 + 10 * candidate.length / query.length
+        : candidate.includes(query) ? 70
+        : query[0] === candidate[0] && distance <= Math.max(1, Math.floor(query.length * .28)) ? 65 - distance * 10 : 0;
+      return { label, type, score };
+    }).filter(candidate => candidate && candidate.score >= 45)
+      .sort((a, b) => b.score - a.score || a.label.length - b.label.length)
+      .slice(0, 3);
+  }
+  function guessType(name, useFuzzy = true) {
     const value = name.toLowerCase();
     const cooked = /\b(leftover|cooked|yesterday|last night|reheated)\b/.test(value);
+    if (/\b(canned|tinned|tin of|can of)\s+(tuna|salmon|sardines?|fish)\b|\bsardines?\b/.test(value)) return 'canned-fish';
     if (/\b(rice|risotto)\b/.test(value)) return 'cooked-rice';
     if (/\b(pasta|spaghetti|macaroni|penne)\b/.test(value)) return 'cooked-pasta';
-    if (/\b(noodles?|ramen|udon)\b/.test(value)) return 'cooked-noodles';
+    if (/\b(noodles?|ramen|udon|soba)\b/.test(value)) return 'cooked-noodles';
     if (/\b(quinoa|couscous|bulgur|barley)\b/.test(value)) return 'cooked-grain';
-    if (/\b(potatoes|potato|mash)\b/.test(value)) return cooked ? 'cooked-potato' : 'raw-potato';
+    if (/\b(potatoes|potato|mash)\b/.test(value)) return cooked || /\bmash/.test(value) ? 'cooked-potato' : 'raw-potato';
     if (/\b(beans?|lentils?|chickpeas?)\b/.test(value)) return cooked ? 'cooked-beans' : 'canned-beans';
-    if (/\b(tomatoes|tomato)\b/.test(value)) return /\b(can|canned|tin|tinned)\b/.test(value) ? 'canned-tomato' : 'tomato';
-    if (/\b(onions?|shallots?)\b/.test(value)) return 'onion';
-    if (/\b(mushrooms?)\b/.test(value)) return 'mushrooms';
-    if (/\b(spinach|lettuce|kale|greens)\b/.test(value)) return 'greens';
+    if (/\b(tomatoes|tomato)\b/.test(value)) return /\b(can|canned|tin|tinned)\b/.test(value) ? 'canned-tomato' : cooked ? 'cooked-veg' : 'tomato';
+    if (/\b(onions?|shallots?)\b/.test(value)) return cooked ? 'cooked-veg' : 'onion';
+    if (/\b(mushrooms?)\b/.test(value)) return cooked ? 'cooked-veg' : 'mushrooms';
+    if (/\b(spinach|lettuce|kale|greens|arugula)\b/.test(value)) return cooked ? 'cooked-veg' : 'greens';
+    if (/\bcarrots?\b/.test(value)) return cooked ? 'cooked-veg' : 'carrot';
+    if (/\b(peppers?|capsicum)\b/.test(value)) return cooked ? 'cooked-veg' : 'pepper';
+    if (/\bbroccoli\b/.test(value)) return cooked ? 'cooked-veg' : 'broccoli';
+    if (/\bcucumbers?\b/.test(value)) return 'cucumber';
+    if (/\bcabbage\b/.test(value)) return cooked ? 'cooked-veg' : 'cabbage';
+    if (/\b(corn|sweetcorn)\b/.test(value)) return cooked ? 'cooked-veg' : 'corn';
+    if (/\bavocados?\b/.test(value)) return 'avocado';
+    if (/\bhummus\b/.test(value)) return 'hummus';
+    if (/\b(peanut|almond) butter\b/.test(value)) return 'peanut-butter';
+    if (/\b(almonds?|walnuts?|peanuts?|nuts?|sunflower seeds?|pumpkin seeds?)\b/.test(value)) return 'nuts';
     if (/\b(chicken|beef|pork|turkey|fish|salmon|tofu|meat)\b/.test(value)) return cooked ? 'cooked-protein' : '';
-    if (/\b(broccoli|carrots?|peppers?|zucchini|courgette|vegetables?|peas)\b/.test(value)) return cooked ? 'cooked-veg' : 'fresh-veg';
-    if (/\b(tortillas?|wraps?|flatbread)\b/.test(value)) return 'tortilla';
-    if (/\b(bread|toast|bagel|rolls?)\b/.test(value)) return 'bread';
+    if (/\b(zucchini|courgette|eggplant|aubergine|cauliflower|vegetables?|peas|asparagus)\b/.test(value)) return cooked ? 'cooked-veg' : 'fresh-veg';
+    if (/\b(tortillas?|wraps?|flatbread|pita)\b/.test(value)) return 'tortilla';
+    if (/\b(bread|toast|bagel|rolls?|sourdough)\b/.test(value)) return 'bread';
     if (/\b(eggs?)\b/.test(value)) return 'eggs';
     if (/\b(yogurt|yoghurt)\b/.test(value)) return 'yogurt';
     if (/\b(cheese|cheddar|mozzarella|parmesan|feta)\b/.test(value)) return 'cheese';
     if (/\b(milk)\b/.test(value)) return 'milk';
     if (/\b(oats?|oatmeal)\b/.test(value)) return 'oats';
-    if (/\b(banana|apple|pear|orange|mango|berries|berry|strawberry|strawberries|blueberry|blueberries|grapes?|peaches?|fruit)\b/.test(value)) return 'fruit';
-    return '';
+    if (/\b(banana|apple|pear|orange|mango|berries|berry|strawberry|strawberries|blueberry|blueberries|grapes?|peaches?|pineapple|melon|fruit)\b/.test(value)) return 'fruit';
+    return useFuzzy ? nearestIngredients(name).find(candidate => candidate.score >= 55)?.type || '' : '';
+  }
+  function renderSuggestions() {
+    const input = $('food-input');
+    const last = input.value.split(/[,;\n]/).at(-1).trim();
+    const matches = last && !guessType(last, false) ? nearestIngredients(last) : [];
+    const holder = $('ingredient-suggestions'); holder.replaceChildren();
+    holder.hidden = matches.length === 0;
+    if (!matches.length) return;
+    const label = document.createElement('span'); label.textContent = 'Closest ingredients'; holder.append(label);
+    for (const match of matches) {
+      const button = document.createElement('button'); button.type = 'button'; button.textContent = match.label;
+      button.addEventListener('click', () => {
+        const value = input.value;
+        const start = Math.max(value.lastIndexOf(','), value.lastIndexOf(';'), value.lastIndexOf('\n')) + 1;
+        const current = value.slice(start);
+        const prefix = current.match(/^\s*(?:leftover\s+|cooked\s+)?/i)?.[0] || '';
+        input.value = value.slice(0, start) + prefix + match.label;
+        input.focus(); renderSuggestions();
+      });
+      holder.append(button);
+    }
   }
   function renderReview() {
     $('review').hidden = draft.length === 0;
@@ -364,7 +509,7 @@
   }
   function render() { renderPantry(); renderIdea(); renderTwoMealPlan(); }
 
-  $('food-input').addEventListener('input', () => { draft = []; $('review').hidden = true; $('form-error').hidden = true; });
+  $('food-input').addEventListener('input', () => { draft = []; $('review').hidden = true; $('form-error').hidden = true; renderSuggestions(); });
   $('add-form').addEventListener('submit', event => {
     event.preventDefault();
     const names = $('food-input').value.split(/[,;\n]+/).map(value => value.trim().replace(/\s+/g, ' ')).filter(Boolean);
@@ -388,7 +533,7 @@
     $('review-error').hidden = !error; $('review-error').textContent = error;
     if (error) return;
     for (const item of draft) pantry.push({ id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`, name: item.name, type: item.type, date: COOKED.has(item.type) ? item.date : todayISO() });
-    savePantry(); resetPlan(); currentIdea = 0; draft = []; $('add-form').reset(); renderReview(); render();
+    savePantry(); resetPlan(); currentIdea = 0; draft = []; $('add-form').reset(); renderSuggestions(); renderReview(); render();
   });
   $('clear-list').addEventListener('click', () => {
     if (!confirm('Clear this kitchen list from your browser?')) return;

@@ -40,6 +40,7 @@
           <form id="add-form" novalidate>
             <label for="food-input">Enter several foods, separated by commas or new lines</label>
             <textarea id="food-input" name="foodInput" rows="4" placeholder="leftover rice, half a tomato, yogurt"></textarea>
+            <div id="ingredient-suggestions" class="ingredient-suggestions" aria-live="polite" hidden></div>
             <button class="primary-button" type="submit">Review my list <span aria-hidden="true">↗</span></button>
             <p id="form-error" class="form-error" role="alert" hidden></p>
           </form>

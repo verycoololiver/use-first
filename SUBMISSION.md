@@ -9,7 +9,7 @@ Source: https://github.com/verycoololiver/use-first
 
 The annoying part of leftovers is deciding what to do with several small amounts of food. Use First starts with the food you have, instead of sending you through a recipe search that assumes a full shopping trip.
 
-Paste a list such as `leftover rice, half a tomato, ripe banana, plain yogurt`. The tool guesses food types and lets you check them before adding the list. It suggests a meal using the actual items you entered. If there is enough for two different meals, it can split the list between them without using the same item twice.
+Paste a list such as `leftover rice, half a tomato, ripe banana, plain yogurt`. The tool suggests close ingredient names if you misspell one, then lets you check the food types before adding the list. It suggests a meal using the actual items you entered. If there is enough for two different meals, it can split the list between them without using the same item twice.
 
 ## SDG connection
 
@@ -17,7 +17,7 @@ Use First addresses **UN Sustainable Development Goal 12, target 12.3**, which c
 
 ## What I built
 
-The app runs entirely in the browser. It supports 25 food types and flexible meal patterns such as fried rice, soup, potato hash, a tortilla melt, and fruit with yogurt. Cooked leftovers need a cooked date; items past four days are left out of suggestions. The kitchen list stays on the device in browser local storage.
+The app runs entirely in the browser. It recognizes over 90 common ingredient names across 36 food types, with a small matching algorithm for typos and partial names. Its meal patterns include fried rice, soup, potato hash, a tortilla melt, hummus wraps, bean salad, and fruit with yogurt. Cooked leftovers need a cooked date; items past four days are left out of suggestions. The kitchen list stays on the device in browser local storage.
 
 The optional two-meal plan appears only when the current list can make two complete meals. It assigns each item at most once. The meal ideas are suggestions, not a claim that food has already been saved.
 
@@ -27,11 +27,12 @@ HTML, CSS, vanilla JavaScript, and browser local storage. OpenAI Codex assisted 
 
 ## Screenshots for Devpost
 
-Upload these three files from the separate `Devpost-screenshots` folder:
+Upload these four files from the separate `Devpost-screenshots` folder:
 
 1. `01-goal-12-landing.png` — project introduction and Goal 12.3.
 2. `02-meal-idea-demo.png` — a demo list with the matched meal.
 3. `03-two-meal-plan-demo.png` — separate meal assignments using each food once.
+4. `04-ingredient-suggestion.png` — a misspelled ingredient with its closest match.
 
 The second and third screenshots show entered example food. They are demos, not measured food-waste savings.
 
