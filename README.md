@@ -16,7 +16,9 @@ There are plenty of recipe search sites. This one focuses on leftovers already i
 
 ## How it works
 
-The app is plain HTML, CSS and JavaScript. It recognizes 117 common ingredient names, groups them into 40 food types, and fixes minor typos with a small edit-distance matcher. Unknown names are not accepted or used in recipes; the user can try a more specific name. Its 31 meal patterns include fried rice, chicken and vegetable skillet, meat and tomato pasta, fish with potatoes, a bean and cheese wrap, soup, oatmeal, and fruit with yogurt. It only presents a meal as complete when it matches the foods you entered. When it cannot make a complete match, it suggests one type of food that could help.
+The app is plain HTML, CSS and JavaScript. It recognizes 117 common ingredient names, groups them into 39 food types, and fixes minor typos with a small edit-distance matcher. Unknown names are not accepted or used in recipes; the user can try a more specific name. There are 106 meal ideas, including French toast, stuffed peppers, fish cakes, bean patties, noodle soup, pasta bakes, wraps, and meat dishes. Each has required foods and its own cooking steps. These are flexible ideas for the amounts you have, rather than recipes with measured portions.
+
+The result counter shows how many meals match your current kitchen list. It only presents a meal as complete when all its required food groups are there. If it cannot make a complete match, it suggests one type of food that could help.
 
 Cooked leftovers need a cooked date. Raw meat and fish need the date they went into the fridge. The app leaves cooked food out of suggestions after four days, raw poultry, fish and ground meat after two days, and whole cuts of meat after five days. The cooking steps use the [FoodSafety.gov temperature chart](https://www.foodsafety.gov/food-safety-charts/safe-minimum-internal-temperatures). The app cannot check how food was stored or whether it is spoiled.
 
