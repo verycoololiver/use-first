@@ -42,7 +42,7 @@ Plain HTML, CSS and JavaScript. The plate and ingredient illustration is CSS dra
 
 ## Hackathon checklist
 
-The [event rules](https://acodemic-hackathon.devpost.com/rules) permit AI tools and require rights to included assets. Projects must clearly align with at least one SDG and be accessible in a browser or app. The [submission requirements](https://acodemic-hackathon.devpost.com/) call for a public project link, a description explaining the idea and SDG connection, **at least three screenshots**, a technology list and source code. A 1–5 minute demo video is optional. The listed deadline is **September 26, 2026 at 11:45 p.m. CDT** (**September 27 at 1:45 p.m. Korea time**).
+The [event rules](https://acodemic-hackathon.devpost.com/rules) permit AI tools and require rights to included assets. Projects must clearly align with at least one SDG and be accessible in a browser or app. The event overview lists **students aged 13+** as eligible and excludes companies and professional organizations. The [submission requirements](https://acodemic-hackathon.devpost.com/) call for a public project link, a description explaining the idea and SDG connection, **at least three screenshots**, a technology list and source code. A 1–5 minute demo video is optional. The listed deadline is **September 26, 2026 at 11:45 p.m. CDT** (**September 27 at 1:45 p.m. Korea time**).
 
 For screenshots, capture: (1) the landing page and real empty state; (2) a user-entered leftover set with the suggested meal and exact ingredients; (3) the two-day plan showing separate assignments and any unplanned item. Use only food you actually enter for the demo, and label screenshots as demonstrations.
 
