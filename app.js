@@ -3,341 +3,398 @@
 
   const KEY = 'usefirst_kitchen_v1';
   const PLAN_KEY = 'usefirst_two_day_plan_v1';
-  const COOKED = new Set(['cooked-rice', 'cooked-pasta', 'cooked-veg', 'cooked-protein', 'cooked-beans']);
-  const TYPE_LABEL = {
-    'cooked-rice': 'cooked rice or grain', 'cooked-pasta': 'cooked pasta',
-    'cooked-veg': 'cooked vegetables', 'cooked-protein': 'cooked protein',
-    'cooked-beans': 'cooked beans or lentils', 'fresh-veg': 'fresh vegetables',
-    bread: 'bread or wrap', eggs: 'eggs', fruit: 'fruit', cheese: 'cheese', yogurt: 'yogurt', milk: 'milk'
+  const COOKED = new Set(['cooked-rice', 'cooked-pasta', 'cooked-noodles', 'cooked-grain', 'cooked-potato', 'cooked-veg', 'cooked-protein', 'cooked-beans']);
+  const LABEL = {
+    'cooked-rice': 'cooked rice', 'cooked-pasta': 'cooked pasta', 'cooked-noodles': 'cooked noodles',
+    'cooked-grain': 'cooked grains', 'cooked-potato': 'cooked potatoes', 'cooked-veg': 'cooked vegetables',
+    'cooked-protein': 'cooked meat, fish or tofu', 'cooked-beans': 'cooked beans or lentils',
+    'fresh-veg': 'fresh vegetables', greens: 'leafy greens', tomato: 'tomatoes', onion: 'onions',
+    mushrooms: 'mushrooms', 'raw-potato': 'potatoes', bread: 'bread', tortilla: 'wraps or tortillas',
+    eggs: 'eggs', fruit: 'fruit or berries', cheese: 'cheese', yogurt: 'yogurt', milk: 'milk',
+    oats: 'oats', 'canned-beans': 'canned beans or lentils', 'canned-tomato': 'canned tomatoes'
   };
-  const $ = (id) => document.getElementById(id);
-  const byDate = (a, b) => (a.date || '9999').localeCompare(b.date || '9999');
+  const FRESH_VEG = ['fresh-veg', 'greens', 'tomato', 'onion', 'mushrooms'];
+  const VEG = ['cooked-veg', ...FRESH_VEG];
+  const BEANS = ['cooked-beans', 'canned-beans'];
+  const $ = id => document.getElementById(id);
   const todayISO = () => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   };
-  const dayDiff = (date) => {
+  const dayDiff = date => {
     const [y, m, d] = date.split('-').map(Number);
     const [ty, tm, td] = todayISO().split('-').map(Number);
     return Math.round((Date.UTC(ty, tm - 1, td) - Date.UTC(y, m - 1, d)) / 86400000);
   };
+  const list = values => new Intl.ListFormat('en', { style: 'long', type: 'conjunction' }).format(values);
+  const named = (items, ...types) => list(items.filter(item => types.includes(item.type)).map(item => item.name));
 
   const recipes = [
     {
       title: 'Fried rice from leftovers',
-      intro: 'A hot pan turns yesterday’s rice and odds-and-ends vegetables into dinner.',
-      slots: [['cooked-rice'], ['cooked-veg', 'fresh-veg']],
-      extras: ['cooked-protein', 'eggs', 'cooked-beans'],
+      intro: 'A hot pan makes yesterday’s rice and spare vegetables feel like dinner.',
+      slots: [['cooked-rice'], VEG], extras: ['cooked-protein', ...BEANS, 'eggs'],
       steps: ({ names, has }) => [
-        has('fresh-veg') ? `Heat a little oil in a pan and cook ${names('fresh-veg')} until tender.` : `Heat a little oil in a pan and warm ${names('cooked-veg') || 'your vegetables'}.`,
-        `Add ${names('cooked-rice') || 'cooked rice'}${has('cooked-protein') || has('cooked-beans') ? ` and ${names('cooked-protein', 'cooked-beans')}` : ''}. Break up the rice and stir until all cooked leftovers are thoroughly reheated.`,
-        `${has('eggs') ? `Push the rice aside, cook ${names('eggs')} fully, then mix in.` : 'Season with whatever you already keep in your kitchen.'} Serve immediately.`
+        names(...FRESH_VEG) ? `Chop ${names(...FRESH_VEG)} and cook in a little oil until tender.${has('cooked-veg') ? ` Add ${names('cooked-veg')} and reheat.` : ''}` : `Reheat ${names('cooked-veg')} in a lightly oiled pan.`,
+        `Add ${names('cooked-rice')}${names('cooked-protein', ...BEANS) ? ` and ${names('cooked-protein', ...BEANS)}` : ''}. Stir until the rice and any cooked leftovers are thoroughly hot.`,
+        has('eggs') ? `Cook ${names('eggs')} fully in the pan, then mix through.` : 'Season with what you have and serve hot.'
       ]
     },
     {
       title: 'Pasta skillet',
-      intro: 'A quick second life for leftover pasta, vegetables, and any cooked protein.',
-      slots: [['cooked-pasta'], ['cooked-veg', 'fresh-veg', 'cooked-protein', 'cooked-beans']],
-      extras: ['cheese'],
-      steps: ({ names, has }) => [
-        has('fresh-veg') ? `Heat a little oil in a pan and cook ${names('fresh-veg')} until tender.` : 'Heat a little oil in a pan.',
-        `Add ${names('cooked-pasta') || 'the cooked pasta'} and ${names('cooked-veg', 'cooked-protein', 'cooked-beans') || 'the other leftover ingredients'}. Toss until the leftovers are piping hot.`,
-        `${has('cheese') ? `Finish with ${names('cheese')}.` : 'Add any seasoning you already have.'} Serve hot.`
+      intro: 'Leftover pasta, a pan, and whatever vegetables or protein are around.',
+      slots: [['cooked-pasta'], [...VEG, 'canned-tomato', 'cooked-protein', ...BEANS]], extras: ['cheese'],
+      steps: ({ names }) => [
+        names(...FRESH_VEG) ? `Chop and cook ${names(...FRESH_VEG)} in a little oil until tender.` : 'Heat a little oil in a pan.',
+        `Add ${names('cooked-pasta')}${names('cooked-veg', 'canned-tomato', 'cooked-protein', ...BEANS) ? ` with ${names('cooked-veg', 'canned-tomato', 'cooked-protein', ...BEANS)}` : ''}. Toss until all cooked leftovers are thoroughly hot.`,
+        names('cheese') ? `Finish with ${names('cheese')} and serve.` : 'Season to taste and serve.'
       ]
     },
     {
-      title: 'Soup from what’s left',
-      intro: 'Water, a pan, and what is already in the fridge. Add seasoning only if you have it.',
-      slots: [['cooked-veg', 'fresh-veg', 'cooked-protein', 'cooked-beans']],
-      extras: ['cooked-rice', 'cooked-pasta'],
+      title: 'Noodle stir-fry',
+      intro: 'Give cooked noodles a quick second life in a hot pan.',
+      slots: [['cooked-noodles'], [...VEG, 'cooked-protein', ...BEANS]], extras: ['eggs'],
       steps: ({ names, has }) => [
-        has('fresh-veg') ? `Put ${names('fresh-veg')} in a pan with enough water to cover; simmer until tender.` : 'Bring a pan of water to a simmer.',
-        has('cooked-veg') || has('cooked-protein') || has('cooked-beans') || has('cooked-rice') || has('cooked-pasta') ? `Add ${names('cooked-veg', 'cooked-protein', 'cooked-beans', 'cooked-rice', 'cooked-pasta')}. Simmer until all cooked leftovers are thoroughly reheated.` : 'Keep simmering until the vegetables are cooked through.',
-        `Taste and season with what you have. ${has('cooked-rice') || has('cooked-pasta') ? 'The rice or pasta makes it more filling.' : 'Serve with bread if you have some.'}`
+        names(...FRESH_VEG) ? `Chop ${names(...FRESH_VEG)} and cook until tender.` : 'Heat a lightly oiled pan.',
+        `Add ${names('cooked-noodles')}${names('cooked-veg', 'cooked-protein', ...BEANS) ? ` and ${names('cooked-veg', 'cooked-protein', ...BEANS)}` : ''}. Toss until the cooked leftovers are thoroughly reheated.`,
+        has('eggs') ? `Cook ${names('eggs')} fully in the pan, then mix through.` : 'Add any seasoning you already have and serve.'
+      ]
+    },
+    {
+      title: 'Grain bowl',
+      intro: 'Put leftover rice or grains under a warm, simple topping.',
+      slots: [['cooked-rice', 'cooked-grain'], ['cooked-protein', ...BEANS, ...VEG]], extras: [],
+      steps: ({ names }) => [
+        `Warm ${names('cooked-rice', 'cooked-grain')} until thoroughly hot.`,
+        names(...FRESH_VEG) ? `Cook ${names(...FRESH_VEG)} until tender.${names('cooked-veg', 'cooked-protein', ...BEANS) ? ` Reheat ${names('cooked-veg', 'cooked-protein', ...BEANS)} thoroughly.` : ''}` : `Reheat ${names('cooked-veg', 'cooked-protein', ...BEANS)} thoroughly.`,
+        `Put the topping over the grains. Add seasoning or sauce only if you have it.`
+      ]
+    },
+    {
+      title: 'Potato hash',
+      intro: 'A pan meal for spare potatoes and a few other odds and ends.',
+      slots: [['cooked-potato', 'raw-potato'], [...VEG, 'eggs', ...BEANS]], extras: ['cooked-protein', 'cheese'],
+      steps: ({ names, has }) => [
+        has('raw-potato') ? `Dice ${names('raw-potato')} and cook in a lightly oiled pan until fully tender.` : `Cut ${names('cooked-potato')} and reheat in a lightly oiled pan.`,
+        `${names(...FRESH_VEG) ? `Add ${names(...FRESH_VEG)} and cook until tender. ` : ''}${names('cooked-veg', 'cooked-protein', ...BEANS) ? `Add ${names('cooked-veg', 'cooked-protein', ...BEANS)} and reheat thoroughly.` : ''}` || 'Keep the pan hot.',
+        `${has('eggs') ? `Cook ${names('eggs')} fully in the pan. ` : ''}${has('cheese') ? `Top with ${names('cheese')}.` : 'Season and serve hot.'}`
+      ]
+    },
+    {
+      title: 'Tortilla melt',
+      intro: 'A wrap and a little cheese make a useful base for small leftovers.',
+      slots: [['tortilla'], ['cheese']], extras: [...VEG, 'cooked-protein', ...BEANS],
+      steps: ({ names }) => [
+        names(...FRESH_VEG) ? `Chop and cook ${names(...FRESH_VEG)} until tender.` : 'Heat a pan over medium heat.',
+        names('cooked-veg', 'cooked-protein', ...BEANS) ? `Reheat ${names('cooked-veg', 'cooked-protein', ...BEANS)} thoroughly.` : 'Keep the pan ready for the wrap.',
+        `Put ${names('cheese')}${names(...VEG, 'cooked-protein', ...BEANS) ? ` and ${names(...VEG, 'cooked-protein', ...BEANS)}` : ''} inside ${names('tortilla')}. Fold and toast both sides until the cheese melts.`
+      ]
+    },
+    {
+      title: 'Toast with toppings',
+      intro: 'Turn a small leftover into something to eat on toast.',
+      slots: [['bread'], ['cheese', ...VEG, 'cooked-protein', ...BEANS]], extras: [],
+      steps: ({ names }) => [
+        `Toast ${names('bread')}.`,
+        `${names(...FRESH_VEG) ? `Wash and cut ${names(...FRESH_VEG)}. ` : ''}${names('cooked-veg', 'cooked-protein', ...BEANS) ? `Reheat ${names('cooked-veg', 'cooked-protein', ...BEANS)} thoroughly.` : ''}` || 'Prepare the topping.',
+        `Pile ${names('cheese', ...VEG, 'cooked-protein', ...BEANS)} onto the toast and serve.`
       ]
     },
     {
       title: 'Egg-and-leftovers skillet',
-      intro: 'Eggs can hold small amounts of vegetables or cooked leftovers together.',
-      slots: [['eggs'], ['fresh-veg', 'cooked-veg', 'cooked-protein', 'cooked-beans']],
-      extras: ['cheese'],
-      steps: ({ names, has }) => [
-        has('fresh-veg') ? `Cook ${names('fresh-veg')} in a lightly oiled pan until tender.${has('cooked-veg') || has('cooked-protein') || has('cooked-beans') ? ` Add ${names('cooked-veg', 'cooked-protein', 'cooked-beans')} and reheat thoroughly.` : ''}` : `Warm ${names('cooked-veg', 'cooked-protein', 'cooked-beans') || 'your cooked filling'} thoroughly in a lightly oiled pan.`,
-        `Beat ${names('eggs') || 'the eggs'} and pour them into the pan. Cook until the eggs are fully set.`,
-        `${has('cheese') ? `Add ${names('cheese')} if it makes sense with your filling.` : 'Season to taste.'} Serve hot.`
+      intro: 'Eggs pull small amounts of vegetables or cooked leftovers together.',
+      slots: [['eggs'], [...VEG, 'cooked-protein', ...BEANS]], extras: ['cheese'],
+      steps: ({ names }) => [
+        names(...FRESH_VEG) ? `Cook ${names(...FRESH_VEG)} in a lightly oiled pan until tender.` : 'Heat a lightly oiled pan.',
+        names('cooked-veg', 'cooked-protein', ...BEANS) ? `Add ${names('cooked-veg', 'cooked-protein', ...BEANS)} and reheat thoroughly.` : 'Keep the pan warm.',
+        `Beat ${names('eggs')} and pour into the pan. Cook until fully set.${names('cheese') ? ` Add ${names('cheese')} before serving.` : ''}`
       ]
     },
     {
-      title: 'Loaded toast or wrap',
-      intro: 'A small leftover can become a meal when it has a base.',
-      slots: [['bread'], ['cooked-protein', 'cooked-beans', 'cooked-veg', 'fresh-veg', 'cheese']],
-      extras: [],
-      steps: ({ names, has }) => [
-        `Toast or warm ${names('bread') || 'bread or a wrap'}.`,
-        `${has('fresh-veg') ? `Wash and cut ${names('fresh-veg')}. ` : ''}${has('cooked-protein') || has('cooked-beans') || has('cooked-veg') ? `Thoroughly reheat ${names('cooked-protein', 'cooked-beans', 'cooked-veg')}.` : 'Prepare your topping.'}`,
-        `Pile on ${names('cooked-protein', 'cooked-beans', 'cooked-veg', 'fresh-veg', 'cheese') || 'your topping'} and eat while warm.`
-      ]
-    },
-    {
-      title: 'Rice bowl, rebuilt',
-      intro: 'Use the rice as a base and put the most urgent leftovers on top.',
-      slots: [['cooked-rice'], ['cooked-protein', 'cooked-beans', 'cooked-veg', 'fresh-veg']],
-      extras: [],
-      steps: ({ names, has }) => [
-        `Heat ${names('cooked-rice') || 'the cooked rice'} until piping hot.`,
-        `${has('fresh-veg') ? `Cook ${names('fresh-veg')} until tender. ` : ''}${has('cooked-protein') || has('cooked-beans') || has('cooked-veg') ? `Thoroughly reheat ${names('cooked-protein', 'cooked-beans', 'cooked-veg')}.` : ''}`,
-        `Put ${names('cooked-protein', 'cooked-beans', 'cooked-veg', 'fresh-veg') || 'the topping'} over the rice. Add a sauce or seasoning only if you have one.`
+      title: 'Use-it-up soup',
+      intro: 'A small pot can bring several separate leftovers together.',
+      slots: [[...VEG, 'canned-tomato'], [...VEG, 'canned-tomato', 'cooked-protein', ...BEANS, 'cooked-rice', 'cooked-pasta', 'cooked-noodles', 'cooked-grain']], extras: [],
+      steps: ({ names }) => [
+        names(...FRESH_VEG) ? `Chop ${names(...FRESH_VEG)} and simmer in enough water to cover until tender.` : 'Bring a pot of water to a simmer.',
+        names('cooked-veg', 'canned-tomato', 'cooked-protein', ...BEANS, 'cooked-rice', 'cooked-pasta', 'cooked-noodles', 'cooked-grain') ? `Add ${names('cooked-veg', 'canned-tomato', 'cooked-protein', ...BEANS, 'cooked-rice', 'cooked-pasta', 'cooked-noodles', 'cooked-grain')}. Simmer until all cooked leftovers are thoroughly hot.` : 'Keep simmering until the vegetables are cooked through.',
+        'Season with what you have and serve.'
       ]
     },
     {
       title: 'Warm bean pan',
-      intro: 'Beans and vegetables make a quick, filling pan meal.',
-      slots: [['cooked-beans'], ['cooked-veg', 'fresh-veg']],
-      extras: ['bread', 'cooked-rice'],
-      steps: ({ names, has }) => [
-        has('fresh-veg') ? `Cook ${names('fresh-veg')} in a little oil until tender.` : `Warm ${names('cooked-veg') || 'your cooked vegetables'} in a lightly oiled pan.`,
-        `Add ${names('cooked-beans') || 'the cooked beans'}${has('cooked-veg') ? ` and ${names('cooked-veg')}` : ''}. Heat thoroughly and season to taste.`,
-        `Serve with ${names('bread', 'cooked-rice') || 'what you have'} or eat it as a simple bowl.`
+      intro: 'Beans plus vegetables make a quick, filling meal.',
+      slots: [BEANS, VEG], extras: ['bread', 'tortilla', 'cooked-rice', 'cooked-grain'],
+      steps: ({ names }) => [
+        names(...FRESH_VEG) ? `Cook ${names(...FRESH_VEG)} in a little oil until tender.` : 'Heat a lightly oiled pan.',
+        `Add ${names(...BEANS)}${names('cooked-veg') ? ` and ${names('cooked-veg')}` : ''}. Heat thoroughly.`,
+        names('bread', 'tortilla', 'cooked-rice', 'cooked-grain') ? `Warm ${names('bread', 'tortilla', 'cooked-rice', 'cooked-grain')} and serve with the beans.` : 'Season and eat as a simple bowl.'
       ]
     },
     {
       title: 'Fruit-and-yogurt bowl',
-      intro: 'A useful breakfast or snack for fruit that needs eating soon.',
-      slots: [['fruit'], ['yogurt']],
-      extras: [],
-      steps: ({ names }) => [
-        `Wash and cut ${names('fruit') || 'the fruit'}, removing any inedible parts.`,
-        `Spoon ${names('yogurt') || 'yogurt'} into a bowl and add the fruit.`,
-        'Eat it now, or refrigerate promptly.'
-      ]
+      intro: 'A quick breakfast for fruit that is ready to eat.',
+      slots: [['fruit'], ['yogurt']], extras: [],
+      steps: ({ names }) => [`Wash and cut ${names('fruit')}, removing inedible parts.`, `Spoon ${names('yogurt')} into a bowl and add the fruit.`, 'Eat now or refrigerate promptly.']
     },
     {
       title: 'Fruit smoothie',
-      intro: 'A quick way to use fruit and milk together.',
+      intro: 'Fruit and milk are enough for a simple drink.',
       slots: [['fruit'], ['milk']], extras: ['yogurt'],
-      steps: ({ names }) => [
-        `Wash and cut ${names('fruit') || 'the fruit'}, removing any inedible parts.`,
-        `Blend with ${names('milk') || 'milk'}${names('yogurt') ? ` and ${names('yogurt')}` : ''} until smooth.`,
-        'Drink right away or refrigerate promptly.'
-      ]
+      steps: ({ names }) => [`Wash and cut ${names('fruit')}, removing inedible parts.`, `Blend with ${names('milk')}${names('yogurt') ? ` and ${names('yogurt')}` : ''}.`, 'Drink right away or refrigerate promptly.']
+    },
+    {
+      title: 'Fruit oatmeal',
+      intro: 'A useful breakfast when you have oats and fruit.',
+      slots: [['oats'], ['fruit']], extras: ['milk', 'yogurt'],
+      steps: ({ names }) => [`Cook ${names('oats')} with ${names('milk') || 'water'} until soft.`, `Wash and cut ${names('fruit')} and add it to the oats.`, names('yogurt') ? `Top with ${names('yogurt')} and serve.` : 'Serve warm.']
     },
     {
       title: 'Rice porridge',
-      intro: 'A simple way to use leftover rice even if it is the only food you entered.',
-      slots: [['cooked-rice']],
-      extras: ['cooked-veg', 'cooked-protein', 'cooked-beans', 'eggs'],
+      intro: 'Even one portion of leftover rice can become a warm meal.',
+      slots: [['cooked-rice']], extras: ['cooked-veg', 'cooked-protein', ...BEANS],
+      steps: ({ names }) => [`Simmer ${names('cooked-rice')} with water until soft and thick.`, names('cooked-veg', 'cooked-protein', ...BEANS) ? `Add ${names('cooked-veg', 'cooked-protein', ...BEANS)} and reheat thoroughly.` : 'Season with what you have.', 'Serve hot.']
+    },
+    {
+      title: 'Loaded potato',
+      intro: 'A potato makes a base for whatever small topping you have.',
+      slots: [['raw-potato', 'cooked-potato'], ['cheese', 'yogurt', ...BEANS, 'cooked-veg', 'cooked-protein']], extras: ['tomato', 'greens'],
       steps: ({ names, has }) => [
-        `Put ${names('cooked-rice') || 'the cooked rice'} in a pan with water. Simmer, stirring, until it softens into a thick porridge.`,
-        `${has('cooked-veg') || has('cooked-protein') || has('cooked-beans') ? `Add ${names('cooked-veg', 'cooked-protein', 'cooked-beans')} and heat it thoroughly.` : 'Season with anything suitable you already have.'}`, 
-        `${has('eggs') ? `Cook ${names('eggs')} fully before serving.` : 'Serve hot.'}`
+        has('raw-potato') ? `Cook ${names('raw-potato')} until fully tender.` : `Reheat ${names('cooked-potato')} thoroughly.`,
+        names('cooked-veg', 'cooked-protein', ...BEANS) ? `Reheat ${names('cooked-veg', 'cooked-protein', ...BEANS)} thoroughly.` : 'Cut the potato open.',
+        `Top with ${names('cheese', 'yogurt', ...BEANS, 'cooked-veg', 'cooked-protein', 'tomato', 'greens')}. Wash fresh toppings before adding them.`
       ]
     },
     {
-      title: 'Vegetable pan',
-      intro: 'A quick use-up meal for vegetables, even when no grain or protein is listed.',
-      slots: [['fresh-veg', 'cooked-veg']],
-      extras: ['cooked-beans', 'cooked-protein', 'eggs'],
-      steps: ({ names, has }) => [
-        has('fresh-veg') ? `Cut ${names('fresh-veg')} into bite-sized pieces and cook in a lightly oiled pan until tender.${has('cooked-veg') ? ` Add ${names('cooked-veg')} and reheat thoroughly.` : ''}` : `Warm ${names('cooked-veg') || 'your cooked vegetables'} in a lightly oiled pan until thoroughly reheated.`,
-        has('cooked-beans') || has('cooked-protein') ? `Add ${names('cooked-beans', 'cooked-protein')} and heat thoroughly.` : 'Season with what you have.',
-        `${has('eggs') ? `Add ${names('eggs')} and cook until fully set.` : 'Season to taste with what you have.'} Serve hot.`
-      ]
-    },
-    {
-      title: 'Fruit plate',
-      intro: 'No elaborate recipe needed: use the fruit while it is good.',
-      slots: [['fruit']], extras: [],
-      steps: ({ names }) => [`Wash ${names('fruit') || 'the fruit'} and cut away inedible parts.`, 'Serve as a snack or alongside a meal.', 'Refrigerate any cut fruit promptly.']
+      title: 'Grilled cheese and tomato',
+      intro: 'A familiar way to use the last slices of bread and cheese.',
+      slots: [['bread'], ['cheese']], extras: ['tomato'],
+      steps: ({ names }) => [`Put ${names('cheese')}${names('tomato') ? ` and sliced ${names('tomato')}` : ''} between ${names('bread')}.`, 'Toast in a lightly oiled pan until golden on both sides and the cheese melts.', 'Serve warm.']
     },
     {
       title: 'Eggs for dinner',
-      intro: 'A plain cooked-egg meal if eggs are all you have listed.',
-      slots: [['eggs']], extras: ['bread', 'fresh-veg', 'cooked-veg'],
-      steps: ({ names, has }) => [`Beat ${names('eggs') || 'the eggs'} with a little water if you like.`, `${has('fresh-veg') ? `Cook ${names('fresh-veg')} until tender. ` : ''}${has('cooked-veg') ? `Reheat ${names('cooked-veg')} thoroughly. ` : ''}Add the eggs to a lightly oiled pan and cook until fully set.`, `${has('bread') ? `Serve with ${names('bread')}.` : 'Serve hot.'}`]
+      intro: 'A simple answer when eggs are the main thing left.',
+      slots: [['eggs']], extras: ['bread', ...VEG],
+      steps: ({ names }) => [
+        names(...FRESH_VEG) ? `Cook ${names(...FRESH_VEG)} until tender.` : 'Heat a lightly oiled pan.',
+        names('cooked-veg') ? `Reheat ${names('cooked-veg')} thoroughly, then add ${names('eggs')} and cook until fully set.` : `Add ${names('eggs')} and cook until fully set.`,
+        names('bread') ? `Serve with ${names('bread')}.` : 'Serve hot.'
+      ]
     }
   ];
 
   let pantry = readPantry();
-  let current = 0;
-  let twoDayPlan = readTwoDayPlan();
+  let currentIdea = 0;
+  let twoDayPlan = readPlan();
+  let draft = [];
 
   function readPantry() {
     try {
-      const parsed = JSON.parse(localStorage.getItem(KEY) || '[]');
-      return Array.isArray(parsed) ? parsed.filter(i => i && typeof i.id === 'string' && typeof i.name === 'string' && Object.hasOwn(TYPE_LABEL, i.type) && /^\d{4}-\d{2}-\d{2}$/.test(i.date)).slice(0, 60) : [];
+      const value = JSON.parse(localStorage.getItem(KEY) || '[]');
+      return Array.isArray(value) ? value.filter(item => item && typeof item.id === 'string' && typeof item.name === 'string' && Object.hasOwn(LABEL, item.type) && /^\d{4}-\d{2}-\d{2}$/.test(item.date)).slice(0, 60) : [];
     } catch { return []; }
   }
   function savePantry() { try { localStorage.setItem(KEY, JSON.stringify(pantry)); } catch {} }
-  function readTwoDayPlan() {
+  function readPlan() {
     try {
-      const parsed = JSON.parse(localStorage.getItem(PLAN_KEY) || 'null');
-      return parsed && parsed.date === todayISO() && Array.isArray(parsed.days) ? parsed : null;
+      const value = JSON.parse(localStorage.getItem(PLAN_KEY) || 'null');
+      return value && value.date === todayISO() && Array.isArray(value.days) ? value : null;
     } catch { return null; }
   }
-  function saveTwoDayPlan() { try { localStorage.setItem(PLAN_KEY, JSON.stringify(twoDayPlan)); } catch {} }
-  function resetTwoDayPlan() { twoDayPlan = null; saveTwoDayPlan(); }
-  function isEligible(item, dayOffset = 0) { return !COOKED.has(item.type) || (item.safe === true && dayDiff(item.date) >= 0 && dayDiff(item.date) + dayOffset <= 4); }
-  function listText(list) { return new Intl.ListFormat('en', { style: 'long', type: 'conjunction' }).format(list); }
-  function pickName(items, ...types) { return listText(items.filter(i => types.includes(i.type)).map(i => i.name)); }
-
+  function savePlan() { try { localStorage.setItem(PLAN_KEY, JSON.stringify(twoDayPlan)); } catch {} }
+  function resetPlan() { twoDayPlan = null; savePlan(); }
+  function eligible(item, dayOffset = 0) { return !COOKED.has(item.type) || (dayDiff(item.date) >= 0 && dayDiff(item.date) + dayOffset <= 4); }
   function ideasFor(items, dayOffset = 0) {
-    const eligible = items.filter(i => isEligible(i, dayOffset)).sort(byDate);
-    return recipes.map((recipe) => {
-      if (recipe.valid && !recipe.valid(eligible)) return null;
-      const chosen = new Set();
+    const available = items.filter(item => eligible(item, dayOffset)).sort((a, b) => a.date.localeCompare(b.date));
+    return recipes.map(recipe => {
+      const ids = new Set();
       const missing = [];
       for (const group of recipe.slots) {
-        const match = eligible.find(i => group.includes(i.type) && !chosen.has(i.id));
-        if (match) chosen.add(match.id); else missing.push(group.map(type => TYPE_LABEL[type]).join(' or '));
+        const item = available.find(candidate => group.includes(candidate.type) && !ids.has(candidate.id));
+        if (item) ids.add(item.id); else missing.push(LABEL[group[0]]);
       }
       const relevant = new Set([...recipe.slots.flat(), ...recipe.extras]);
-      for (const item of eligible) if (relevant.has(item.type)) chosen.add(item.id);
-      const used = eligible.filter(i => chosen.has(i.id));
-      if (!used.length || missing.length > 1) return null;
-      const urgent = used.reduce((sum, i) => sum + (COOKED.has(i.type) ? 10 + dayDiff(i.date) * 4 : Math.max(0, 4 + dayDiff(i.date))), 0);
-      return { recipe, used, missing, score: used.length * 100 - missing.length * 200 + urgent + (recipe.slots.length > 1 ? 6 : 0) };
-    }).filter(Boolean).sort((a, b) => b.score - a.score);
+      for (const item of available) if (relevant.has(item.type)) ids.add(item.id);
+      const used = available.filter(item => ids.has(item.id));
+      const urgency = used.reduce((sum, item) => sum + (COOKED.has(item.type) ? 8 + dayDiff(item.date) * 5 : 0), 0);
+      return { recipe, used, missing, score: used.length * 100 + urgency + recipe.slots.length * 5 - missing.length * 250 };
+    }).filter(idea => idea.used.length).sort((a, b) => b.score - a.score);
   }
+  function completeIdeas(items, dayOffset = 0) { return ideasFor(items, dayOffset).filter(idea => !idea.missing.length); }
+  function context(used) { return { names: (...types) => named(used, ...types), has: type => used.some(item => item.type === type) }; }
 
-  function updateDateField() {
-    const cooked = COOKED.has($('food-type').value);
-    $('food-date-label').textContent = cooked ? 'Cooked on' : 'Plan to use by (optional)';
-    $('safe-row').hidden = !cooked;
-    $('stored-safely').required = cooked;
-    $('food-date').required = cooked;
-    $('food-date').max = cooked ? todayISO() : '';
-    $('date-help').textContent = cooked ? 'Cooked food needs a date and storage check. This app cannot verify food safety.' : 'Your plan date helps rank ideas. It does not judge whether the food is safe.';
+  function guessType(name) {
+    const value = name.toLowerCase();
+    const cooked = /\b(leftover|cooked|yesterday|last night|reheated)\b/.test(value);
+    if (/\b(rice|risotto)\b/.test(value)) return 'cooked-rice';
+    if (/\b(pasta|spaghetti|macaroni|penne)\b/.test(value)) return 'cooked-pasta';
+    if (/\b(noodles?|ramen|udon)\b/.test(value)) return 'cooked-noodles';
+    if (/\b(quinoa|couscous|bulgur|barley)\b/.test(value)) return 'cooked-grain';
+    if (/\b(potatoes|potato|mash)\b/.test(value)) return cooked ? 'cooked-potato' : 'raw-potato';
+    if (/\b(beans?|lentils?|chickpeas?)\b/.test(value)) return cooked ? 'cooked-beans' : 'canned-beans';
+    if (/\b(tomatoes|tomato)\b/.test(value)) return /\b(can|canned|tin|tinned)\b/.test(value) ? 'canned-tomato' : 'tomato';
+    if (/\b(onions?|shallots?)\b/.test(value)) return 'onion';
+    if (/\b(mushrooms?)\b/.test(value)) return 'mushrooms';
+    if (/\b(spinach|lettuce|kale|greens)\b/.test(value)) return 'greens';
+    if (/\b(chicken|beef|pork|turkey|fish|salmon|tofu|meat)\b/.test(value)) return cooked ? 'cooked-protein' : '';
+    if (/\b(broccoli|carrots?|peppers?|zucchini|courgette|vegetables?|peas)\b/.test(value)) return cooked ? 'cooked-veg' : 'fresh-veg';
+    if (/\b(tortillas?|wraps?|flatbread)\b/.test(value)) return 'tortilla';
+    if (/\b(bread|toast|bagel|rolls?)\b/.test(value)) return 'bread';
+    if (/\b(eggs?)\b/.test(value)) return 'eggs';
+    if (/\b(yogurt|yoghurt)\b/.test(value)) return 'yogurt';
+    if (/\b(cheese|cheddar|mozzarella|parmesan|feta)\b/.test(value)) return 'cheese';
+    if (/\b(milk)\b/.test(value)) return 'milk';
+    if (/\b(oats?|oatmeal)\b/.test(value)) return 'oats';
+    if (/\b(banana|apple|pear|orange|mango|berries|berry|strawberry|strawberries|blueberry|blueberries|grapes?|peaches?|fruit)\b/.test(value)) return 'fruit';
+    return '';
   }
-
+  function renderReview() {
+    $('review').hidden = draft.length === 0;
+    const holder = $('review-list'); holder.replaceChildren();
+    for (const [index, item] of draft.entries()) {
+      const row = document.createElement('div'); row.className = 'review-row';
+      const name = document.createElement('strong'); name.textContent = item.name;
+      const select = document.createElement('select'); select.id = `review-type-${index}`; select.setAttribute('aria-label', `Food type for ${item.name}`);
+      const placeholder = document.createElement('option'); placeholder.value = ''; placeholder.textContent = 'Choose a food type'; select.append(placeholder);
+      for (const [label, types] of [['Cooked leftovers', [...COOKED]], ['Fresh and pantry food', Object.keys(LABEL).filter(type => !COOKED.has(type))]]) {
+        const group = document.createElement('optgroup'); group.label = label;
+        for (const type of types) { const option = document.createElement('option'); option.value = type; option.textContent = LABEL[type]; group.append(option); }
+        select.append(group);
+      }
+      select.value = item.type;
+      const dateRow = document.createElement('div'); dateRow.className = 'review-date'; dateRow.hidden = !COOKED.has(item.type);
+      const dateLabel = document.createElement('label'); dateLabel.htmlFor = `review-date-${index}`; dateLabel.textContent = 'Cooked on';
+      const date = document.createElement('input'); date.id = `review-date-${index}`; date.type = 'date'; date.max = todayISO(); date.value = item.date;
+      date.addEventListener('change', () => { item.date = date.value; });
+      select.addEventListener('change', () => { item.type = select.value; item.date = ''; date.value = ''; dateRow.hidden = !COOKED.has(item.type); });
+      dateRow.append(dateLabel, date); row.append(name, select, dateRow); holder.append(row);
+    }
+  }
   function renderPantry() {
     $('item-count').textContent = pantry.length;
     $('clear-list').hidden = pantry.length === 0;
-    const list = $('pantry-list');
-    list.replaceChildren();
-    if (!pantry.length) { const p = document.createElement('p'); p.className = 'empty-pantry'; p.textContent = 'Your kitchen is empty. Add one ingredient to begin.'; list.append(p); return; }
-    for (const [index, item] of [...pantry].sort(byDate).entries()) {
+    const holder = $('pantry-list');
+    holder.replaceChildren();
+    if (!pantry.length) {
+      const empty = document.createElement('p'); empty.className = 'empty-pantry'; empty.textContent = 'Nothing here yet. Add your food above.'; holder.append(empty);
+    }
+    const sorted = [...pantry].sort((a, b) => a.date.localeCompare(b.date));
+    for (const [index, item] of sorted.entries()) {
       const row = document.createElement('div'); row.className = 'food-row';
-      if (!isEligible(item)) row.classList.add('excluded');
-      else if (dayDiff(item.date) >= -1) row.classList.add('urgent');
+      if (!eligible(item)) row.classList.add('excluded');
       const number = document.createElement('span'); number.className = 'food-number'; number.textContent = String(index + 1).padStart(2, '0');
       const main = document.createElement('div'); main.className = 'food-main';
       const strong = document.createElement('strong'); strong.textContent = item.name;
-      const small = document.createElement('small'); small.textContent = `${TYPE_LABEL[item.type]} · ${COOKED.has(item.type) ? 'cooked' : 'planned'} ${item.date}${isEligible(item) ? '' : ' · not suggested'}`;
+      const small = document.createElement('small'); small.textContent = `${LABEL[item.type]}${COOKED.has(item.type) ? ` · cooked ${item.date}` : ''}${eligible(item) ? '' : ' · not used in ideas'}`;
       main.append(strong, small);
-      const button = document.createElement('button'); button.type = 'button'; button.textContent = '×'; button.setAttribute('aria-label', `Remove ${item.name}`);
-      button.addEventListener('click', () => { pantry = pantry.filter(i => i.id !== item.id); savePantry(); resetTwoDayPlan(); current = 0; render(); });
-      row.append(number, main, button); list.append(row);
+      const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = '×'; remove.setAttribute('aria-label', `Remove ${item.name}`);
+      remove.addEventListener('click', () => { pantry = pantry.filter(food => food.id !== item.id); savePantry(); resetPlan(); currentIdea = 0; render(); });
+      row.append(number, main, remove); holder.append(row);
     }
+    const excluded = pantry.filter(item => !eligible(item)).length;
+    $('overdue-note').hidden = !excluded;
+    $('overdue-note').textContent = excluded ? `${excluded} cooked item${excluded === 1 ? ' is' : 's are'} past four days, so ${excluded === 1 ? 'it is' : 'they are'} left out of meal ideas.` : '';
   }
-
   function fillList(id, values) {
-    const list = $(id); list.replaceChildren();
-    for (const value of values) { const li = document.createElement('li'); li.textContent = value; list.append(li); }
+    const holder = $(id); holder.replaceChildren();
+    for (const value of values) { const item = document.createElement('li'); item.textContent = value; holder.append(item); }
   }
-
-  function buildTwoDayPlan() {
-    const tonightIdeas = ideasFor(pantry, 0).filter(idea => idea.missing.length === 0);
-    let best = null;
-    for (const tonight of tonightIdeas) {
-      const usedTonight = new Set(tonight.used.map(i => i.id));
-      const remaining = pantry.filter(i => !usedTonight.has(i.id));
-      const tomorrowIdeas = ideasFor(remaining, 1).filter(idea => idea.missing.length === 0 && idea.recipe.title !== tonight.recipe.title);
-      for (const tomorrow of [null, ...tomorrowIdeas]) {
-        const covered = tonight.used.length + (tomorrow?.used.length || 0);
-        const urgency = tonight.used.reduce((score, item) => score + (COOKED.has(item.type) ? 10 + dayDiff(item.date) * 6 : Math.max(0, dayDiff(item.date) + 2)), 0);
-        const score = covered * 100 + urgency + (tonight.used.length > 1 ? 12 : 0) + (tomorrow && tomorrow.used.length > 1 ? 15 : 0);
-        if (!best || score > best.score) best = { tonight, tomorrow, score };
-      }
-    }
-    twoDayPlan = { date: todayISO(), days: best ? [best.tonight, best.tomorrow].filter(Boolean).map(idea => ({ title: idea.recipe.title, usedIds: idea.used.map(i => i.id) })) : [] };
-    saveTwoDayPlan(); renderTwoDayPlan();
-  }
-
-  function renderTwoDayPlan() {
-    const days = twoDayPlan?.date === todayISO() ? twoDayPlan.days : [];
-    for (const [index, label] of ['tonight', 'tomorrow'].entries()) {
-      const entry = days[index];
-      const recipe = entry && recipes.find(r => r.title === entry.title);
-      const used = entry ? entry.usedIds.map(id => pantry.find(i => i.id === id)).filter(Boolean) : [];
-      const title = $(`${label}-title`), items = $(`${label}-items`), steps = $(`${label}-steps`);
-      steps.replaceChildren(); steps.hidden = !recipe || !used.length;
-      if (!twoDayPlan) {
-        title.textContent = 'Waiting for your kitchen';
-        items.textContent = index === 0 ? 'Add your food above, then build a plan.' : 'Each ingredient is assigned to at most one meal.';
-      } else if (!recipe || !used.length) {
-        title.textContent = index === 0 ? 'No complete match yet' : 'No second meal needed';
-        items.textContent = index === 0 ? 'Add another ingredient or try a meal idea above.' : 'The remaining food did not make a complete second meal.';
-      } else {
-        title.textContent = recipe.title;
-        items.textContent = `Uses ${listText(used.map(i => i.name))}.`;
-        const context = { names: (...types) => pickName(used, ...types), has: (type) => used.some(i => i.type === type) };
-        for (const instruction of recipe.steps(context)) { const li = document.createElement('li'); li.textContent = instruction; steps.append(li); }
-      }
-    }
-    const plannedIds = new Set(days.flatMap(day => day.usedIds));
-    const remaining = pantry.filter(i => !plannedIds.has(i.id));
-    $('unplanned').textContent = twoDayPlan ? (remaining.length ? `Still unplanned: ${listText(remaining.map(i => i.name))}.` : 'All listed food has a place in this plan.') : '';
-    $('build-plan').firstChild.textContent = twoDayPlan ? 'REBUILD MY TWO-DAY PLAN ' : 'BUILD MY TWO-DAY PLAN ';
-  }
-
-  function renderPlan() {
-    const ideas = ideasFor(pantry);
-    const hasFood = pantry.length > 0;
-    const excluded = pantry.filter(i => !isEligible(i));
-    $('overdue-note').hidden = excluded.length === 0;
-    $('overdue-note').textContent = excluded.length ? `${excluded.length} cooked item${excluded.length === 1 ? ' is' : 's are'} outside the four-day refrigerator guideline or lacked the storage check. ${excluded.length === 1 ? 'It is' : 'They are'} not used in meal ideas.` : '';
+  function renderIdea() {
+    const ideas = completeIdeas(pantry);
+    $('second-meal-prompt').hidden = !ideas.some(idea => {
+      const used = new Set(idea.used.map(item => item.id));
+      return completeIdeas(pantry.filter(item => !used.has(item.id)), 1).length > 0;
+    });
     $('empty-plan').hidden = ideas.length > 0;
     $('plan-content').hidden = ideas.length === 0;
     if (!ideas.length) {
-      $('plan-count').textContent = hasFood ? 'NO SAFE MATCH YET' : 'NO INGREDIENTS YET';
-      const empty = $('empty-plan');
-      empty.querySelector('h3').textContent = hasFood ? 'Add one more ingredient.' : 'A meal starts with what you’ve got.';
-      empty.querySelector('p').textContent = hasFood ? 'The current list has no supported match. Try adding another ingredient or check the food-safety note below.' : 'Add food on the left. Use First will match it to simple meals and plainly show anything else needed.';
+      const near = ideasFor(pantry).find(idea => idea.missing.length === 1);
+      $('plan-count').textContent = pantry.length ? 'NO FULL MATCH YET' : 'WAITING FOR FOOD';
+      $('empty-plan').querySelector('h4').textContent = pantry.length ? 'Not enough for a meal yet.' : 'Start with your food list.';
+      $('empty-plan').querySelector('p').textContent = near ? `Add ${near.missing[0]} to try ${near.recipe.title.toLowerCase()}.` : pantry.length ? 'Try adding another food. We only show meals we can match to what you entered.' : "Paste what's left in your kitchen. We'll look for meals you can make from it.";
       return;
     }
-    current %= ideas.length;
-    const { recipe, used, missing } = ideas[current];
-    $('plan-count').textContent = `${current + 1} OF ${ideas.length} IDEAS`;
-    $('plan-kicker').textContent = missing.length ? 'ONE THING MISSING' : 'YOU HAVE WHAT IT NEEDS';
-    $('recipe-title').textContent = recipe.title;
-    $('recipe-intro').textContent = recipe.intro;
-    fillList('used-items', used.map(i => i.name));
-    $('missing-block').hidden = missing.length === 0;
-    fillList('missing-items', missing);
-    const context = { names: (...types) => pickName(used, ...types), has: (type) => used.some(i => i.type === type) };
-    fillList('recipe-steps', recipe.steps(context));
-    $('safety-note').textContent = used.some(i => COOKED.has(i.type)) ? 'Safety first: these meal ideas assume cooked leftovers were refrigerated promptly, kept cold, and are within 3–4 days. Reheat cooked leftovers thoroughly to 165°F / 74°C. If in doubt, do not use them.' : 'Safety first: wash fresh produce, cook eggs fully, and follow the food’s label and local guidance. This tool cannot judge freshness.';
+    currentIdea %= ideas.length;
+    const idea = ideas[currentIdea];
+    $('plan-count').textContent = `${currentIdea + 1} / ${ideas.length} IDEAS`;
+    $('recipe-title').textContent = idea.recipe.title;
+    $('recipe-intro').textContent = idea.recipe.intro;
+    fillList('used-items', idea.used.map(item => item.name));
+    fillList('recipe-steps', idea.recipe.steps(context(idea.used)));
     $('next-recipe').hidden = ideas.length < 2;
   }
+  function renderTwoMealPlan() {
+    if (twoDayPlan && twoDayPlan.date !== todayISO()) twoDayPlan = null;
+    $('two-day-result').hidden = !twoDayPlan;
+    if (!twoDayPlan) return;
+    const days = twoDayPlan.date === todayISO() ? twoDayPlan.days : [];
+    for (const [index, label] of ['tonight', 'tomorrow'].entries()) {
+      const entry = days[index];
+      const recipe = entry && recipes.find(item => item.title === entry.title);
+      const used = entry ? entry.usedIds.map(id => pantry.find(item => item.id === id)).filter(Boolean) : [];
+      const steps = $(`${label}-steps`); steps.replaceChildren();
+      if (!recipe || !used.length) {
+        $(`${label}-title`).textContent = index === 0 ? 'No full meal yet' : 'Add more food for meal 2';
+        $(`${label}-items`).textContent = index === 0 ? 'Try adding another ingredient above.' : 'There is no second complete match from what remains.';
+      } else {
+        $(`${label}-title`).textContent = recipe.title;
+        $(`${label}-items`).textContent = `Uses ${list(used.map(item => item.name))}.`;
+        for (const instruction of recipe.steps(context(used))) { const li = document.createElement('li'); li.textContent = instruction; steps.append(li); }
+      }
+    }
+    const planned = new Set(days.flatMap(day => day.usedIds));
+    const remaining = pantry.filter(item => !planned.has(item.id));
+    $('unplanned').textContent = remaining.length ? `Still in your kitchen: ${list(remaining.map(item => item.name))}.` : 'Everything on your list has a place in these two meals.';
+  }
+  function buildPlan() {
+    const firstIdeas = completeIdeas(pantry);
+    let best = null;
+    for (const first of firstIdeas) {
+      const firstIds = new Set(first.used.map(item => item.id));
+      const remaining = pantry.filter(item => !firstIds.has(item.id));
+      const secondIdeas = completeIdeas(remaining, 1);
+      for (const second of [null, ...secondIdeas]) {
+        const count = first.used.length + (second?.used.length || 0);
+        const urgency = first.used.reduce((sum, item) => sum + (COOKED.has(item.type) ? 10 + dayDiff(item.date) * 6 : 0), 0);
+        const score = count * 100 + urgency + (second ? 30 : 0) - (second?.recipe.title === first.recipe.title ? 5 : 0);
+        if (!best || score > best.score) best = { first, second, score };
+      }
+    }
+    twoDayPlan = { date: todayISO(), days: best ? [best.first, best.second].filter(Boolean).map(idea => ({ title: idea.recipe.title, usedIds: idea.used.map(item => item.id) })) : [] };
+    savePlan(); renderTwoMealPlan(); $('two-day-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function render() { renderPantry(); renderIdea(); renderTwoMealPlan(); }
 
-  function render() { renderPantry(); renderPlan(); renderTwoDayPlan(); }
-
-  $('food-type').addEventListener('change', () => { $('food-date').value = ''; $('stored-safely').checked = false; updateDateField(); });
-  $('add-form').addEventListener('submit', (event) => {
+  $('food-input').addEventListener('input', () => { draft = []; $('review').hidden = true; $('form-error').hidden = true; });
+  $('add-form').addEventListener('submit', event => {
     event.preventDefault();
-    const name = $('food-name').value.trim().replace(/\s+/g, ' ');
-    const type = $('food-type').value;
-    const cooked = COOKED.has(type);
-    const date = $('food-date').value || todayISO();
+    const names = $('food-input').value.split(/[,;\n]+/).map(value => value.trim().replace(/\s+/g, ' ')).filter(Boolean);
     let error = '';
-    if (!name) error = 'Name the food first.';
-    else if (!Object.hasOwn(TYPE_LABEL, type)) error = 'Choose a food type.';
-    else if (cooked && !$('food-date').value) error = 'Enter the date this leftover was cooked.';
-    else if (cooked && !$('stored-safely').checked) error = 'Only add cooked leftovers that were refrigerated promptly and kept cold; see the timing note above.';
-    else if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) error = 'Enter a valid date.';
-    else if (cooked && dayDiff(date) < 0) error = 'Cooked-on date cannot be in the future.';
-    else if (pantry.length >= 60) error = 'The kitchen list is full. Remove an item before adding more.';
+    if (!names.length) error = 'List at least one food.';
+    else if (names.some(name => name.length > 45)) error = 'Keep each food name under 45 characters.';
+    else if (names.length > 20) error = 'Add up to 20 foods at a time.';
+    else if (pantry.length + names.length > 60) error = 'Your kitchen list has room for 60 foods. Remove a few first.';
     $('form-error').hidden = !error; $('form-error').textContent = error;
     if (error) return;
-    pantry.push({ id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`, name, type, date, safe: cooked ? true : null });
-    savePantry(); resetTwoDayPlan(); current = 0; $('add-form').reset(); updateDateField(); render(); $('food-name').focus();
+    draft = names.map(name => ({ name, type: guessType(name), date: '' }));
+    $('review-error').hidden = true;
+    renderReview();
+    $('review').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+  $('add-reviewed').addEventListener('click', () => {
+    const missingType = draft.find(item => !Object.hasOwn(LABEL, item.type));
+    const missingDate = draft.find(item => COOKED.has(item.type) && !item.date);
+    const futureDate = draft.find(item => COOKED.has(item.type) && item.date && dayDiff(item.date) < 0);
+    const error = missingType ? `Choose a food type for ${missingType.name}.` : missingDate ? `Add the cooked date for ${missingDate.name}.` : futureDate ? `The cooked date for ${futureDate.name} cannot be in the future.` : '';
+    $('review-error').hidden = !error; $('review-error').textContent = error;
+    if (error) return;
+    for (const item of draft) pantry.push({ id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`, name: item.name, type: item.type, date: COOKED.has(item.type) ? item.date : todayISO() });
+    savePantry(); resetPlan(); currentIdea = 0; draft = []; $('add-form').reset(); renderReview(); render();
   });
   $('clear-list').addEventListener('click', () => {
-    if (!confirm('Clear your kitchen list from this browser?')) return;
-    pantry = []; current = 0; savePantry(); resetTwoDayPlan(); render();
+    if (!confirm('Clear this kitchen list from your browser?')) return;
+    pantry = []; currentIdea = 0; savePantry(); resetPlan(); render();
   });
-  $('next-recipe').addEventListener('click', () => { current++; renderPlan(); });
-  $('print-plan').addEventListener('click', () => window.print());
-  $('build-plan').addEventListener('click', buildTwoDayPlan);
-  updateDateField(); render();
+  $('next-recipe').addEventListener('click', () => { currentIdea++; renderIdea(); });
+  $('build-plan').addEventListener('click', buildPlan);
+  render();
 })();

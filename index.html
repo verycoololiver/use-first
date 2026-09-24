@@ -3,26 +3,80 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#ffd400">
-  <meta name="description" content="Enter your leftovers. Get meal ideas that use what you have, with missing ingredients shown plainly. A free food-waste tool by OB Studio.">
-  <title>Use First — Cook what you have | OB Studio</title>
+  <meta name="theme-color" content="#f7f4ea">
+  <meta name="description" content="Put in the food you have left over. Get a simple meal idea and plan the next two meals without using the same ingredient twice.">
+  <title>Use First — Meals from what you have</title>
   <link rel="stylesheet" href="styles.css">
   <script src="app.js" defer></script>
 </head>
 <body>
-  <a class="skip" href="#tool">Skip to tool</a>
-  <header class="site-header"><a class="brand" href="https://obstudio.org/"><span class="brand-dot">ob</span><span>OB STUDIO</span></a><nav aria-label="Site navigation"><a href="https://obstudio.org/work/">WORKS</a><a href="https://obstudio.org/tools/">TOOLS</a><a href="https://obstudio.org/blog/">BLOG</a><a href="https://obstudio.org/about/">ABOUT</a></nav></header>
-  <main>
-    <section class="hero"><div class="hero-copy"><span class="eyebrow">OB STUDIO / A SMALL TOOL FOR SDG 12</span><h1>USE<br><span>FIRST.</span></h1><p>Leftover rice? Half a tomato? The last bit of chicken? Put them in. Get a meal idea now—or a two-day plan that uses each ingredient once.</p><a href="#tool" class="hero-button">OPEN THE KITCHEN <span aria-hidden="true">↘</span></a></div><div class="hero-art" aria-hidden="true"><div class="plate"><div class="tomato"></div><div class="leaf leaf-a"></div><div class="leaf leaf-b"></div><div class="fork"></div></div><div class="hero-note">THE BEST INGREDIENT<br>IS THE ONE<br>YOU ALREADY HAVE.</div></div></section>
-    <div class="marquee" aria-hidden="true"><span>COOK IT ✦ FREEZE IT ✦ SHARE IT ✦ USE IT FIRST ✦ COOK IT ✦ FREEZE IT ✦ SHARE IT ✦</span></div>
-    <section id="tool" class="tool" aria-labelledby="tool-title"><div class="section-header"><div><span class="eyebrow">01 / THE KITCHEN</span><h2 id="tool-title">What's left over?</h2></div><p>Add what you actually have. Nothing is prefilled. Your list stays in this browser.</p></div>
-      <div class="workspace"><div class="pantry-panel"><form id="add-form" novalidate><div class="form-title"><strong>ADD FOOD</strong><span>01</span></div><label for="food-name">What is it?</label><input id="food-name" name="foodName" type="text" maxlength="45" required autocomplete="off" placeholder="e.g. yesterday's rice"><div class="form-row"><div><label for="food-type">Closest match</label><select id="food-type" name="foodType"><option value="cooked-rice">Cooked rice or grain</option><option value="cooked-pasta">Cooked pasta</option><option value="cooked-veg">Cooked vegetables</option><option value="cooked-protein">Cooked chicken, fish, meat or tofu</option><option value="cooked-beans">Cooked beans or lentils</option><option value="fresh-veg">Fresh vegetables</option><option value="bread">Bread or wrap</option><option value="eggs">Eggs</option><option value="fruit">Fruit</option><option value="cheese">Cheese</option><option value="yogurt">Yogurt</option><option value="milk">Milk</option></select></div><div><label for="food-date" id="food-date-label">Cooked on</label><input id="food-date" name="foodDate" type="date" required></div></div><label id="safe-row" class="safe-row"><input id="stored-safely" type="checkbox"><span>I refrigerated this cooked food promptly (within 2 hours, or 1 hour above 90°F / 32°C) and kept it cold.</span></label><p id="date-help" class="date-help">For cooked leftovers, this date and storage check matter. The app cannot verify food safety.</p><button class="add-button" type="submit">ADD TO MY KITCHEN <span aria-hidden="true">↗</span></button><p id="form-error" role="alert" hidden></p></form><div class="pantry-heading"><div><span class="eyebrow">YOUR FOOD</span><h3 id="pantry-title">Kitchen list <span id="item-count">0</span></h3></div><button id="clear-list" type="button" hidden>CLEAR LIST</button></div><div id="pantry-list" class="pantry-list" aria-live="polite"><p class="empty-pantry">Your kitchen is empty. Add one ingredient to begin.</p></div></div>
-      <div class="plan-panel"><div class="plan-head"><span class="eyebrow">02 / THE PLAN</span><span id="plan-count">NO INGREDIENTS YET</span></div><div id="empty-plan" class="empty-plan"><span class="question-mark" aria-hidden="true">?</span><h3>A meal starts with<br>what you've got.</h3><p>Add food on the left. Use First will match it to simple meals and plainly show anything else needed.</p></div><div id="plan-content" hidden><p class="plan-kicker" id="plan-kicker"></p><h3 id="recipe-title"></h3><p id="recipe-intro" class="recipe-intro"></p><div class="used-block"><span>USES FROM YOUR KITCHEN</span><ul id="used-items"></ul></div><div class="missing-block" id="missing-block"><span>YOU WOULD STILL NEED</span><ul id="missing-items"></ul></div><div class="instructions"><span>MAKE IT</span><ol id="recipe-steps"></ol></div><p id="safety-note" class="safety-note"></p><div class="plan-actions"><button id="next-recipe" type="button">ANOTHER IDEA ↻</button><button id="print-plan" type="button">PRINT PLAN ↗</button></div></div></div></div>
-      <div class="after-tool"><p><strong>How it chooses:</strong> Meals using more of your listed food rank higher. Water and a little cooking oil are assumed; other missing ingredients are named. Cooked leftovers older than four days are kept out of suggestions.</p><p id="overdue-note" hidden></p></div>
+  <a class="skip" href="#tool">Skip to the tool</a>
+  <header class="topbar">
+    <a class="wordmark" href="#top">use first<span>.</span></a>
+    <span class="event-line">Made for the Acodemic × G.I.R.L.S. Global SDG Hackathon</span>
+    <a class="top-link" href="#why">Why Goal 12 <span aria-hidden="true">↘</span></a>
+  </header>
+
+  <main id="top">
+    <section class="intro" aria-labelledby="intro-title">
+      <div class="intro-copy">
+        <span class="eyebrow">A SMALL TOOL FOR THE FOOD ALREADY IN YOUR KITCHEN</span>
+        <h1 id="intro-title">What's for dinner?<br><em>Start with what's left.</em></h1>
+        <p>Yesterday's rice. Half a tomato. The last bit of cheese. Put them in and find something to make before another good ingredient ends up in the bin.</p>
+        <a class="start-link" href="#tool">Find a meal <span aria-hidden="true">↗</span></a>
+      </div>
+      <aside class="goal-card" aria-label="UN Sustainable Development Goal 12">
+        <div class="goal-top"><span class="goal-number">12</span><span>UN SUSTAINABLE<br>DEVELOPMENT GOAL</span></div>
+        <h2>Responsible<br>consumption<br>& production</h2>
+        <div class="goal-bottom"><span>TARGET 12.3</span><p>Halve food waste at the consumer level by 2030.</p><a href="https://sdgs.un.org/goals/goal12" target="_blank" rel="noopener noreferrer">Read the UN target ↗</a></div>
+      </aside>
     </section>
-    <section class="two-day" aria-labelledby="two-day-title"><div class="two-day-head"><div><span class="eyebrow">03 / MAKE IT COUNT</span><h2 id="two-day-title">Tonight. Tomorrow.<br>Nothing counted twice.</h2></div><div><p>Use the whole kitchen list to make a short plan. The planner only books meals you can make with what you entered, gives older cooked food priority, and shows anything it couldn't use.</p><button id="build-plan" type="button">BUILD MY TWO-DAY PLAN <span aria-hidden="true">↗</span></button></div></div><div class="day-grid"><div class="day-card"><span class="day-tag">DAY 01 / TONIGHT</span><h3 id="tonight-title">Waiting for your kitchen</h3><p id="tonight-items">Add your food above, then build a plan.</p><ol id="tonight-steps" hidden></ol></div><div class="day-card"><span class="day-tag">DAY 02 / TOMORROW</span><h3 id="tomorrow-title">Waiting for your kitchen</h3><p id="tomorrow-items">Each ingredient is assigned to at most one meal.</p><ol id="tomorrow-steps" hidden></ol></div></div><p id="unplanned" class="unplanned" aria-live="polite"></p><p class="two-day-note">A plan is a suggestion, not a record that food was eaten. If storage or freshness is uncertain, discard the plan and follow food-safety guidance.</p></section>
-    <section class="impact"><div><span class="eyebrow">04 / THE REASON</span><h2>Food waste starts<br>before the bin.</h2></div><div><p>The UN says households produced <strong>60% of the world's food waste in 2022</strong>. Sustainable Development Goal <strong>12.3</strong> calls for halving food waste at retail and consumer level by 2030. Making a plan around what is already at home is a small, repeatable way to address that problem.</p><p>The US EPA recommends keeping a list of food to use up and planning meals around it. This tool does exactly that; it does not estimate carbon saved or claim a planned meal was already eaten.</p><div class="source-links"><a href="https://sdgs.un.org/goals/goal12" target="_blank" rel="noopener noreferrer">UN GOAL 12 ↗</a><a href="https://www.epa.gov/recycle/preventing-wasted-food-home" target="_blank" rel="noopener noreferrer">EPA FOOD-WASTE GUIDE ↗</a></div></div></section>
-    <section class="safety"><span class="eyebrow">BEFORE YOU COOK</span><h2>Food safety comes first.</h2><p>Refrigerate cooked leftovers within two hours—or one hour when it is above 90°F / 32°C—and keep them cold. Use refrigerated leftovers within three to four days and reheat to 165°F / 74°C, checked with a food thermometer. If storage is uncertain or food seems spoiled, do not use it just to avoid waste. This app cannot assess freshness or replace the label and local food-safety guidance.</p><a href="https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/leftovers-and-food-safety" target="_blank" rel="noopener noreferrer">USDA: LEFTOVERS & SAFETY ↗</a></section>
-  </main><footer><a class="brand" href="https://obstudio.org/"><span class="brand-dot">ob</span><span>OB STUDIO</span></a><span>Built by Oliver. No account, no tracking, no pretend impact numbers.</span><a href="https://obstudio.org/tools/">MORE TOOLS ↗</a></footer>
+
+    <section class="tool-section" id="tool" aria-labelledby="tool-title">
+      <div class="section-heading"><span class="eyebrow">01 / THE KITCHEN</span><h2 id="tool-title">What do you have?</h2><p>List everything you want to use, not just one ingredient. Your kitchen stays in this browser and starts empty.</p></div>
+      <div class="tool-grid">
+        <section class="kitchen-card" aria-labelledby="add-title">
+          <h3 id="add-title">Add your food</h3>
+          <form id="add-form" novalidate>
+            <label for="food-input">Enter several foods, separated by commas or new lines</label>
+            <textarea id="food-input" name="foodInput" rows="4" placeholder="leftover rice, half a tomato, yogurt"></textarea>
+            <button class="primary-button" type="submit">Review my list <span aria-hidden="true">↗</span></button>
+            <p id="form-error" class="form-error" role="alert" hidden></p>
+          </form>
+          <div class="review" id="review" hidden><div class="review-heading"><h4>Check the food types</h4><p>We guessed where we could. Change anything that looks wrong, then add the whole list.</p></div><div id="review-list"></div><button class="primary-button" id="add-reviewed" type="button">Add these foods <span aria-hidden="true">↗</span></button><p id="review-error" class="form-error" role="alert" hidden></p></div>
+          <div class="list-heading"><h4>Your kitchen <span id="item-count">0</span></h4><button id="clear-list" type="button" hidden>Clear list</button></div>
+          <div id="pantry-list" class="pantry-list" aria-live="polite"><p class="empty-pantry">Nothing here yet. Add your food above.</p></div>
+          <p id="overdue-note" class="overdue-note" hidden></p>
+        </section>
+
+        <section class="idea-card" aria-labelledby="idea-title">
+          <div class="idea-top"><h3 id="idea-title">A meal you could make</h3><span id="plan-count">WAITING FOR FOOD</span></div>
+          <div id="empty-plan" class="empty-plan"><span class="empty-symbol" aria-hidden="true">↗</span><h4>Start with your food list.</h4><p>Paste what's left in your kitchen. We'll look for meals you can make from it.</p></div>
+          <div id="plan-content" hidden>
+            <span class="result-label">MAKE THIS WITH WHAT YOU HAVE</span>
+            <h4 id="recipe-title"></h4>
+            <p id="recipe-intro" class="recipe-intro"></p>
+            <div class="uses"><strong>From your kitchen</strong><ul id="used-items"></ul></div>
+            <div class="instructions"><strong>What to do</strong><ol id="recipe-steps"></ol></div>
+            <button id="next-recipe" class="text-button" type="button">Show another idea <span aria-hidden="true">↻</span></button>
+          </div>
+          <div class="second-meal" id="second-meal-prompt" hidden><div><strong>Want to use more of the list?</strong><p>Make a plan for your next two meals. Each ingredient gets used once.</p></div><button id="build-plan" type="button">Plan two meals <span aria-hidden="true">↗</span></button></div>
+        </section>
+      </div>
+
+      <section class="two-meal-result" id="two-day-result" aria-labelledby="two-day-title" hidden>
+        <div class="two-meal-heading"><span class="eyebrow">02 / YOUR NEXT TWO MEALS</span><h2 id="two-day-title">Two meals. No double counting.</h2><p>Here is one way to split up the food you entered. You can change your list and build the plan again.</p></div>
+        <div class="day-grid">
+          <article class="day-card"><span>MEAL 1</span><h3 id="tonight-title"></h3><p id="tonight-items"></p><ol id="tonight-steps"></ol></article>
+          <article class="day-card"><span>MEAL 2</span><h3 id="tomorrow-title"></h3><p id="tomorrow-items"></p><ol id="tomorrow-steps"></ol></article>
+        </div>
+        <p id="unplanned" class="unplanned"></p>
+      </section>
+    </section>
+
+    <section class="why" id="why" aria-labelledby="why-title"><div><span class="eyebrow">WHY GOAL 12?</span><h2 id="why-title">The food we already bought is the place to start.</h2></div><div><p>Households made up <strong>60% of global food waste in 2022</strong>, according to the UN. Goal 12.3 is about cutting that waste at the consumer level. The EPA's advice is practical: keep a list of food to use up and plan meals around it. That's what this tool helps you do.</p><div class="why-links"><a href="https://sdgs.un.org/goals/goal12" target="_blank" rel="noopener noreferrer">UN Goal 12 ↗</a><a href="https://www.epa.gov/recycle/preventing-wasted-food-home" target="_blank" rel="noopener noreferrer">EPA food-waste guide ↗</a></div></div></section>
+    <details class="safety-details"><summary>A quick food-safety note</summary><p>Only use cooked leftovers that were refrigerated promptly and kept cold. USDA guidance says to eat refrigerated leftovers within 3–4 days and reheat them to 165°F / 74°C. If you're unsure how something was stored, leave it out.</p><a href="https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/leftovers-and-food-safety" target="_blank" rel="noopener noreferrer">USDA leftovers guidance ↗</a></details>
+  </main>
+  <footer><span>USE FIRST / SDG 12.3</span><span>Made for the Acodemic × G.I.R.L.S. Global SDG Hackathon</span><a href="#top">Back to top ↑</a></footer>
 </body>
 </html>

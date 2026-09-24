@@ -1,39 +1,40 @@
-# Devpost entry draft: Use First
+# Use First — Devpost entry draft
 
-**Project link:** https://obstudio.org/tools/use-first/
+Project: https://obstudio.org/tools/use-first/
+Source: https://github.com/verycoololiver/use-first
 
-**Source code:** https://github.com/verycoololiver/use-first
+**Short pitch:** Paste what is left in your kitchen. Get a meal you can make from it, or split the food across your next two meals.
 
-**One-line pitch:** Put in the leftovers you have. Get a meal you can make now, then use the rest in a two-day plan without counting anything twice.
+## Inspiration and idea
 
-## About the project
+The annoying part of leftovers is deciding what to do with several small amounts of food. Use First starts with the food you have, instead of sending you through a recipe search that assumes a full shopping trip.
 
-I built Use First for the moment when there are a few things in the fridge but no obvious dinner. You enter the food you actually have. The tool suggests a simple meal, names the items it would use, and shows any missing ingredient rather than pretending the recipe is complete. If you want to plan ahead, it assigns food to tonight and tomorrow, using each entered item at most once.
+Paste a list such as `leftover rice, half a tomato, ripe banana, plain yogurt`. The tool guesses food types and lets you check them before adding the list. It suggests a meal using the actual items you entered. If there is enough for two different meals, it can split the list between them without using the same item twice.
 
-This connects to **SDG 12, target 12.3: reducing food waste at the consumer level**. The UN reports that households accounted for 60% of global food waste in 2022. The US EPA recommends keeping a list of food to use up and planning meals around it. Use First turns those two actions into a small browser tool. It does not claim that opening a recipe saved food or reduced emissions.
+## SDG connection
 
-Cooked leftovers need a date and a storage check. The tool keeps cooked food beyond the four-day refrigerator guideline out of its meal suggestions and tells people to follow food-safety guidance. It cannot judge whether food is actually safe to eat.
+Use First addresses **UN Sustainable Development Goal 12, target 12.3**, which calls for halving food waste at the retail and consumer levels by 2030. The UN reports that households produced 60% of global food waste in 2022. The US EPA recommends keeping a list of food to use up and planning meals around it. This tool makes those two steps easier to do on an ordinary day.
 
-Ingredient-to-recipe apps already exist. What I wanted to make here was a focused leftover planner: a short, understandable set of meal patterns, a clear missing-ingredient label, and a two-day allocation that does not use the same food twice. There is no account, external recipe service, or AI-generated meal text at runtime.
+## What I built
 
-## How to try it
+The app runs entirely in the browser. It supports 25 food types and flexible meal patterns such as fried rice, soup, potato hash, a tortilla melt, and fruit with yogurt. Cooked leftovers need a cooked date; items past four days are left out of suggestions. The kitchen list stays on the device in browser local storage.
 
-1. Open the project link and add the food you have. The list starts empty.
-2. Look at the first meal idea, or switch to another. The tool shows exactly which entered foods it uses.
-3. Press **Build my two-day plan** to see separate assignments for tonight and tomorrow.
+The optional two-meal plan appears only when the current list can make two complete meals. It assigns each item at most once. The meal ideas are suggestions, not a claim that food has already been saved.
 
 ## Technologies
 
-HTML, CSS, and vanilla JavaScript. Browser local storage saves the kitchen list on that device. The illustration is drawn in CSS. OpenAI Codex assisted development. The static app is hosted on OB Studio.
+HTML, CSS, vanilla JavaScript, and browser local storage. OpenAI Codex assisted development. The static app is hosted at the project link above. No recipe API or runtime AI key is needed.
 
-## Screenshots to upload
+## Screenshots for Devpost
 
-- `screenshots/01-landing.png` — live landing page and empty-state tool.
-- `screenshots/02-meal-idea-demo.png` — demo ingredients and a meal suggestion.
-- `screenshots/03-two-day-plan-demo.png` — demo plan with each ingredient assigned once.
+Upload these three files from the separate `Devpost-screenshots` folder:
 
-The latter two use example food entered for the screenshots. They are demonstrations, not verified meals or measured waste reduction.
+1. `01-goal-12-landing.png` — project introduction and Goal 12.3.
+2. `02-meal-idea-demo.png` — a demo list with the matched meal.
+3. `03-two-meal-plan-demo.png` — separate meal assignments using each food once.
 
-## Optional short demo video outline
+The second and third screenshots show entered example food. They are demos, not measured food-waste savings.
 
-Show the empty kitchen first. Add leftover rice with a cooked date and storage check, then half a tomato. Point to the fried rice idea and the exact items it uses. Add a banana and yogurt, build the two-day plan, and show that rice and tomato appear tonight while banana and yogurt appear tomorrow. End on the SDG 12.3 explanation and food-safety note.
+## Optional video outline
+
+Show the empty page, paste the four example foods, check the types, and enter the cooked date for rice. Point to the fried rice idea. Then press **Plan two meals** to show rice and tomato in one meal, banana and yogurt in the other. Finish with the Goal 12.3 card.

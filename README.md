@@ -1,49 +1,31 @@
 # Use First
 
-**Enter leftovers. Get a meal you can actually make. Then plan the next two days without using the same ingredient twice.**
+A few leftovers in the kitchen, but no clear idea what to do with them. Use First is a small tool for making that decision easier.
 
-Use First is a small browser tool made for the [Acodemic x G.I.R.L.S. Global SDG Hackathon](https://acodemic-hackathon.devpost.com/). It addresses **UN Sustainable Development Goal 12: Responsible Consumption and Production**, specifically [target 12.3](https://sdgs.un.org/goals/goal12), which calls for halving food waste at the retail and consumer levels by 2030. The UN reports that households accounted for 60% of global food waste in 2022.
+**[Try the tool](https://obstudio.org/tools/use-first/)**
 
-## Why this exists
+Paste your food as a comma-separated list or put one item on each line. The tool guesses the food types, and you can correct them before adding everything. It then shows meals you can make from the foods on your list. If the list can make two separate meals, a second button splits the food between them so the same item is never counted twice.
 
-The hard part of avoiding food waste is often the ordinary Tuesday question: *I have cooked rice, half a tomato and a little chicken. What can I do with these before they go bad?* A generic recipe search can return thousands of meals, many of which still need a shopping trip. Use First stays narrow. It starts with the food already in the kitchen, suggests short remixes, shows missing ingredients plainly, and can assign available food to tonight and tomorrow without counting it twice.
+For example, entering `leftover rice, half a tomato, ripe banana, plain yogurt` can give you fried rice for one meal and a fruit-and-yogurt bowl for the next. The list starts empty; that example is only here to show how it works.
 
-This is not the first ingredient-to-recipe tool, and it is not a claim to have invented leftover cooking. The contribution is a transparent, compact planning flow for **already-cooked leftovers**, with timing and safety constraints visible to the user. No AI-generated recipes, external recipe database, login, or server is required to use it.
+## Why I made it for SDG 12
 
-## Try it
+[UN Sustainable Development Goal 12](https://sdgs.un.org/goals/goal12) is about responsible consumption and production. [Target 12.3](https://sdgs.un.org/goals/goal12) calls for halving food waste at the retail and consumer levels by 2030. The UN reports that households made up 60% of global food waste in 2022. The [US EPA](https://www.epa.gov/recycle/preventing-wasted-food-home) recommends keeping a list of food to use up and planning meals around it. That is the small, everyday action this tool helps with.
 
-Use the [live tool on OB Studio](https://obstudio.org/tools/use-first/). You can also open `index.html` in a browser or serve this folder locally. Add each food item, choose the closest type, and enter when cooked if it is a cooked leftover. For cooked food, the app asks whether it was refrigerated promptly and kept cold. It will not use cooked food more than four days old in suggestions. Choose another meal idea if the first is not appealing, or press **Build my two-day plan** to allocate items across tonight and tomorrow.
+There are plenty of recipe search sites. This one focuses on leftovers already in the kitchen: quick meal patterns, a short cooked-food age check, and a two-meal plan that does not reuse an item. It is meant to make the next decision easier, not to calculate an unverified environmental impact.
 
-The kitchen list is saved in this browser's local storage. It starts empty. No sample item or test purchase is inserted. Clearing the list is a user action. The two-day plan is a proposal, not evidence that a meal was cooked or food was saved.
+## How it works
 
-## Screenshots
+The app is plain HTML, CSS and JavaScript. It has 25 food types and a set of flexible meal patterns, including fried rice, noodle stir-fry, a tortilla melt, potato hash, soup, oatmeal, and fruit with yogurt. It only presents a meal as complete when it matches the foods you entered. When it cannot make a complete match, it suggests one type of food that could help.
 
-The first shows the live tool's empty state. The other two are labeled demos made with entered example food: leftover rice, half a tomato, a banana and plain yogurt. They do not represent verified food saved.
+Cooked leftovers need a cooked date. Food more than four days old is kept out of meal suggestions; see the [USDA guidance](https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/leftovers-and-food-safety) for storage and reheating. The app cannot check how food was stored or whether it is spoiled.
 
-![Use First landing page](screenshots/01-landing.png)
-![Demo meal idea using entered leftovers](screenshots/02-meal-idea-demo.png)
-![Demo two-day plan assigning each item once](screenshots/03-two-day-plan-demo.png)
+Everything runs in the browser. Your kitchen list is saved in local storage on that device. There is no account or external recipe API. TheMealDB's [free API](https://www.themealdb.com/api.php) only filters by one ingredient; multi-ingredient filtering requires a supporter key. The local meal patterns keep the tool usable without a key or network call. OpenAI Codex assisted development.
 
-## How matching works
+To run it yourself, open `index.html` in a browser or serve this folder as static files. The public version is hosted at the link above.
 
-The app has a small set of flexible meal patterns: fried rice, a pasta skillet, soup, an egg skillet, a rice bowl, loaded toast, a bean pan, fruit and yogurt, and a few one-ingredient fallbacks. It matches food types, names the exact items used, and separately lists any missing category. Water and a little cooking oil are assumed; seasoning is optional. Complete matches rank ahead of those needing another ingredient. The two-day planner searches pairs of complete meal matches, excludes any leftover that would pass the four-day cooked-food window by tomorrow, and scores plans by how much listed food they assign, with a small priority for older cooked food. Each item can appear in at most one planned meal.
+## Hackathon notes
 
-The match is intentionally modest. It does not know quantities, allergies, dietary needs, equipment, or whether a food has been stored safely. A suggested meal may not be satisfying for every combination. Food names are inserted as text, never interpreted as HTML.
+This project was made for the [Acodemic × G.I.R.L.S. Global SDG Hackathon](https://acodemic-hackathon.devpost.com/). The [rules](https://acodemic-hackathon.devpost.com/rules) allow AI tools and require participants to have rights to the content they submit. The project must clearly connect to an SDG and work in a browser or app. The overview lists students aged 13+ as eligible, with companies and professional organizations excluded.
 
-## Food safety and evidence
-
-Food waste reduction never overrides safety. [USDA guidance](https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/leftovers-and-food-safety) advises refrigerating leftovers within two hours (one hour above 90°F / 32°C), eating refrigerated leftovers within three to four days, and reheating them to 165°F / 74°C with a food thermometer. The app asks about storage, excludes cooked leftovers beyond four days, and reminds users that it cannot check spoilage. Fresh-food plan dates are reminders, not safety decisions. Follow labels and local guidance.
-
-The [US EPA](https://www.epa.gov/recycle/preventing-wasted-food-home) recommends keeping a list of foods to use up and planning meals around them. Use First implements that specific behavior. It makes no carbon-savings or “meals rescued” claim from a click.
-
-## Built with
-
-Plain HTML, CSS and JavaScript. The plate and ingredient illustration is CSS drawn for this project; no third-party art is included. Development was assisted by OpenAI Codex. The interface follows OB Studio's yellow, ink and paper visual system.
-
-## Hackathon checklist
-
-The [event rules](https://acodemic-hackathon.devpost.com/rules) permit AI tools and require rights to included assets. Projects must clearly align with at least one SDG and be accessible in a browser or app. The event overview lists **students aged 13+** as eligible and excludes companies and professional organizations. The [submission requirements](https://acodemic-hackathon.devpost.com/) call for a public project link, a description explaining the idea and SDG connection, **at least three screenshots**, a technology list and source code. A 1–5 minute demo video is optional. The listed deadline is **September 26, 2026 at 11:45 p.m. CDT** (**September 27 at 1:45 p.m. Korea time**).
-
-For screenshots, capture: (1) the landing page and real empty state; (2) a user-entered leftover set with the suggested meal and exact ingredients; (3) the two-day plan showing separate assignments and any unplanned item. Use only food you actually enter for the demo, and label screenshots as demonstrations.
-
-The judges assess SDG impact and relevance, creativity and originality, and execution and functionality. The strongest honest story here is a small, working response to household food waste—not an invented environmental impact figure or a claim that recipe search is new.
+A submission needs the public link, a description explaining the idea and SDG connection, **at least three screenshots**, the technologies used, and source code. A 1–5 minute video is optional. The deadline listed by Devpost is **September 26, 2026 at 11:45 p.m. CDT** (**September 27 at 1:45 p.m. Korea time**). This repository contains the source; the three screenshots are prepared separately for the Devpost entry.
